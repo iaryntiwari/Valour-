@@ -1,0 +1,605 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Admin Dashboard — VELOUR</title>
+<script>
+// Auth guard — redirect if not logged in
+if (sessionStorage.getItem('velour_admin') !== 'true') {
+  location.replace('admin-login.html');
+}
+</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0F0D0B; --surface:#1A1612; --surface2:#231F1A;
+  --gold:#C9A96E; --cream:#F5F0E8; --muted:#6B6258;
+  --green:#4CAF50; --red:#E57373; --blue:#64B5F6;
+  --border:rgba(201,169,110,.15);
+}
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
+body{background:var(--bg);color:var(--cream);font-family:'DM Sans',sans-serif;display:flex;min-height:100vh;}
+
+/* SIDEBAR */
+.sidebar{width:240px;background:var(--surface);border-right:1px solid var(--border);display:flex;flex-direction:column;flex-shrink:0;position:fixed;top:0;bottom:0;left:0;overflow-y:auto;}
+.sidebar-brand{padding:2rem 1.5rem;border-bottom:1px solid var(--border);}
+.brand-name{font-family:'Cormorant Garamond',serif;font-size:1.6rem;font-weight:300;letter-spacing:.25em;color:var(--cream);}
+.brand-name span{color:var(--gold);}
+.brand-sub{font-size:.65rem;letter-spacing:.2em;text-transform:uppercase;color:var(--muted);margin-top:.3rem;}
+.sidebar-nav{padding:1.5rem 0;flex:1;}
+.nav-section{font-size:.6rem;letter-spacing:.25em;text-transform:uppercase;color:var(--muted);padding:.5rem 1.5rem;margin-top:1rem;}
+.nav-item{display:flex;align-items:center;gap:.75rem;padding:.8rem 1.5rem;cursor:pointer;transition:all .2s;color:var(--muted);font-size:.88rem;border-left:2px solid transparent;}
+.nav-item:hover{color:var(--cream);background:rgba(201,169,110,.05);}
+.nav-item.active{color:var(--gold);border-left-color:var(--gold);background:rgba(201,169,110,.08);}
+.nav-item .icon{font-size:1rem;width:1.2rem;text-align:center;}
+.sidebar-footer{padding:1.5rem;border-top:1px solid var(--border);}
+.sidebar-footer a{color:var(--muted);font-size:.78rem;text-decoration:none;letter-spacing:.1em;text-transform:uppercase;transition:color .2s;}
+.sidebar-footer a:hover{color:var(--gold);}
+
+/* MAIN */
+.main{margin-left:240px;flex:1;display:flex;flex-direction:column;}
+.topbar{background:var(--surface);border-bottom:1px solid var(--border);padding:1.2rem 2rem;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:50;}
+.topbar-title{font-family:'Cormorant Garamond',serif;font-size:1.5rem;font-weight:300;}
+.topbar-right{display:flex;align-items:center;gap:1rem;}
+.topbar-badge{background:rgba(201,169,110,.15);border:1px solid var(--border);color:var(--gold);padding:.3rem .8rem;font-size:.72rem;letter-spacing:.1em;text-transform:uppercase;}
+.content{padding:2rem;}
+
+/* TABS */
+.tab-bar{display:flex;gap:.5rem;margin-bottom:2rem;border-bottom:1px solid var(--border);padding-bottom:0;}
+.tab{padding:.8rem 1.5rem;background:none;border:none;color:var(--muted);font-family:'DM Sans',sans-serif;font-size:.82rem;letter-spacing:.1em;text-transform:uppercase;cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-1px;transition:all .2s;}
+.tab:hover{color:var(--cream);}
+.tab.active{color:var(--gold);border-bottom-color:var(--gold);}
+
+/* STAT CARDS */
+.stats-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1.5rem;margin-bottom:2rem;}
+.stat-card{background:var(--surface);border:1px solid var(--border);padding:1.5rem;position:relative;overflow:hidden;}
+.stat-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;}
+.stat-card.green::before{background:var(--green);}
+.stat-card.gold::before{background:var(--gold);}
+.stat-card.blue::before{background:var(--blue);}
+.stat-card.red::before{background:var(--red);}
+.stat-label{font-size:.68rem;letter-spacing:.18em;text-transform:uppercase;color:var(--muted);margin-bottom:.75rem;}
+.stat-val{font-family:'Cormorant Garamond',serif;font-size:2.5rem;font-weight:300;color:var(--cream);}
+.stat-sub{font-size:.75rem;color:var(--muted);margin-top:.4rem;}
+.stat-icon{position:absolute;top:1.5rem;right:1.5rem;font-size:1.8rem;opacity:.3;}
+
+/* TABLES */
+.table-card{background:var(--surface);border:1px solid var(--border);overflow:hidden;margin-bottom:2rem;}
+.table-header{padding:1.5rem;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;}
+.table-title{font-family:'Cormorant Garamond',serif;font-size:1.3rem;font-weight:300;}
+.btn-add{background:var(--gold);color:var(--bg);border:none;padding:.55rem 1.2rem;font-family:'DM Sans',sans-serif;font-size:.75rem;letter-spacing:.1em;text-transform:uppercase;cursor:pointer;transition:opacity .2s;}
+.btn-add:hover{opacity:.85;}
+table{width:100%;border-collapse:collapse;}
+th{text-align:left;padding:.9rem 1.2rem;font-size:.65rem;letter-spacing:.18em;text-transform:uppercase;color:var(--muted);border-bottom:1px solid var(--border);}
+td{padding:.85rem 1.2rem;font-size:.85rem;border-bottom:1px solid rgba(201,169,110,.06);vertical-align:middle;}
+tr:last-child td{border-bottom:none;}
+tr:hover td{background:rgba(201,169,110,.03);}
+.badge{display:inline-block;padding:.25rem .65rem;font-size:.65rem;letter-spacing:.1em;text-transform:uppercase;}
+.badge-stock{background:rgba(76,175,80,.15);color:var(--green);}
+.badge-sold{background:rgba(229,115,115,.15);color:var(--red);}
+.badge-open{background:rgba(229,115,115,.15);color:var(--red);}
+.badge-progress{background:rgba(100,181,246,.15);color:var(--blue);}
+.badge-resolved{background:rgba(76,175,80,.15);color:var(--green);}
+.action-btn{background:none;border:1px solid var(--border);color:var(--muted);padding:.3rem .7rem;font-size:.7rem;cursor:pointer;margin:0 .2rem;transition:all .2s;font-family:'DM Sans',sans-serif;letter-spacing:.08em;text-transform:uppercase;}
+.action-btn:hover{color:var(--gold);border-color:var(--gold);}
+.action-btn.del:hover{color:var(--red);border-color:var(--red);}
+
+/* CHART */
+.chart-grid{display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;margin-bottom:2rem;}
+.chart-card{background:var(--surface);border:1px solid var(--border);padding:1.5rem;}
+.chart-title{font-size:.72rem;letter-spacing:.18em;text-transform:uppercase;color:var(--muted);margin-bottom:1.5rem;}
+
+.bar-chart{display:flex;flex-direction:column;gap:.8rem;}
+.bar-row{display:flex;align-items:center;gap:.75rem;}
+.bar-label{width:90px;font-size:.78rem;color:var(--muted);flex-shrink:0;}
+.bar-track{flex:1;background:rgba(255,255,255,.05);height:24px;position:relative;overflow:hidden;}
+.bar-fill{height:100%;background:linear-gradient(90deg,var(--gold),rgba(201,169,110,.6));transition:width 1s ease;}
+.bar-val{position:absolute;right:.5rem;top:50%;transform:translateY(-50%);font-size:.72rem;color:var(--cream);}
+
+/* MODAL */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:500;display:none;align-items:center;justify-content:center;}
+.modal-overlay.open{display:flex;}
+.modal{background:var(--surface);border:1px solid var(--border);width:90%;max-width:540px;max-height:85vh;overflow-y:auto;}
+.modal-head{padding:1.5rem;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;}
+.modal-head h3{font-family:'Cormorant Garamond',serif;font-size:1.5rem;font-weight:300;}
+.modal-close{background:none;border:none;color:var(--muted);font-size:1.3rem;cursor:pointer;}
+.modal-body{padding:1.5rem;}
+.form-row{margin-bottom:1.2rem;}
+.form-label{display:block;font-size:.68rem;letter-spacing:.15em;text-transform:uppercase;color:var(--muted);margin-bottom:.5rem;}
+.form-input,.form-select{width:100%;padding:.75rem 1rem;background:var(--surface2);border:1px solid var(--border);color:var(--cream);font-family:'DM Sans',sans-serif;font-size:.88rem;outline:none;transition:border-color .2s;}
+.form-input:focus,.form-select:focus{border-color:var(--gold);}
+.form-select option{background:var(--surface2);}
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:1rem;}
+.btn-submit{width:100%;background:var(--gold);color:var(--bg);border:none;padding:.9rem;font-family:'DM Sans',sans-serif;font-size:.82rem;letter-spacing:.12em;text-transform:uppercase;cursor:pointer;margin-top:.5rem;transition:opacity .2s;}
+.btn-submit:hover{opacity:.85;}
+.form-msg{text-align:center;margin-top:.75rem;font-size:.82rem;}
+
+/* COMPLAINT SOLUTION */
+.solution-area{width:100%;padding:.75rem 1rem;background:var(--surface2);border:1px solid var(--border);color:var(--cream);font-family:'DM Sans',sans-serif;font-size:.85rem;resize:vertical;min-height:80px;outline:none;}
+.solution-area:focus{border-color:var(--gold);}
+
+/* PANEL VISIBILITY */
+.panel{display:none;}
+.panel.active{display:block;}
+
+/* SEARCH */
+.search-input{background:var(--surface2);border:1px solid var(--border);color:var(--cream);padding:.6rem 1rem;font-family:'DM Sans',sans-serif;font-size:.82rem;outline:none;min-width:220px;}
+.search-input:focus{border-color:var(--gold);}
+
+@media(max-width:768px){
+  .sidebar{display:none;}
+  .main{margin-left:0;}
+  .stats-grid{grid-template-columns:1fr 1fr;}
+  .chart-grid{grid-template-columns:1fr;}
+}
+</style>
+</head>
+<body>
+
+<!-- SIDEBAR -->
+<aside class="sidebar">
+  <div class="sidebar-brand">
+    <div class="brand-name">VEL<span>O</span>UR</div>
+    <div class="brand-sub">Admin Console</div>
+  </div>
+  <nav class="sidebar-nav">
+    <div class="nav-section">Overview</div>
+    <div class="nav-item active" onclick="switchTab('dashboard',this)"><span class="icon">📊</span>Dashboard</div>
+
+    <div class="nav-section">Management</div>
+    <div class="nav-item" onclick="switchTab('inventory',this)"><span class="icon">🧥</span>Inventory</div>
+    <div class="nav-item" onclick="switchTab('complaints',this)"><span class="icon">📋</span>Complaints</div>
+    <div class="nav-item" onclick="switchTab('employees',this)"><span class="icon">👥</span>Employees</div>
+    <div class="nav-item" onclick="switchTab('orders',this)"><span class="icon">🛍</span>Orders</div>
+  </nav>
+  <div class="sidebar-footer" style="display:flex;flex-direction:column;gap:.75rem;">
+    <a href="index.html">← Back to Store</a>
+    <button onclick="logout()" style="background:rgba(229,115,115,.1);border:1px solid rgba(229,115,115,.2);color:#E57373;padding:.5rem 1rem;font-family:'DM Sans',sans-serif;font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;cursor:pointer;transition:all .2s;">⏻ Logout</button>
+  </div>
+</aside>
+
+<!-- MAIN -->
+<div class="main">
+  <div class="topbar">
+    <span class="topbar-title" id="topbarTitle">Dashboard</span>
+    <div class="topbar-right">
+      <span class="topbar-badge">Admin Access</span>
+    </div>
+  </div>
+  <div class="content">
+
+    <!-- DASHBOARD PANEL -->
+    <div id="panel-dashboard" class="panel active">
+      <div class="stats-grid" id="statsGrid">
+        <div class="stat-card gold"><div class="stat-label">Items In Stock</div><div class="stat-val" id="s-stock">—</div><div class="stat-sub">Ready to sell</div><div class="stat-icon">🧥</div></div>
+        <div class="stat-card green"><div class="stat-label">Total Revenue</div><div class="stat-val" id="s-revenue">—</div><div class="stat-sub">From all orders</div><div class="stat-icon">💰</div></div>
+        <div class="stat-card blue"><div class="stat-label">Items Sold</div><div class="stat-val" id="s-sold">—</div><div class="stat-sub">Total units sold</div><div class="stat-icon">✅</div></div>
+        <div class="stat-card blue"><div class="stat-label">Employees</div><div class="stat-val" id="s-emp">—</div><div class="stat-sub">Across all branches</div><div class="stat-icon">👥</div></div>
+        <div class="stat-card green"><div class="stat-label">Customers</div><div class="stat-val" id="s-cust">—</div><div class="stat-sub">Registered</div><div class="stat-icon">🙋</div></div>
+        <div class="stat-card red"><div class="stat-label">Open Complaints</div><div class="stat-val" id="s-comp">—</div><div class="stat-sub">Awaiting response</div><div class="stat-icon">⚠️</div></div>
+      </div>
+
+      <div class="chart-grid">
+        <div class="chart-card">
+          <div class="chart-title">Revenue by Garment Type</div>
+          <div class="bar-chart" id="salesChart"></div>
+        </div>
+        <div class="chart-card">
+          <div class="chart-title">Recent Orders</div>
+          <table id="recentOrdersTable">
+            <thead><tr><th>Customer</th><th>Item</th><th>Amount</th><th>Date</th></tr></thead>
+            <tbody></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- INVENTORY PANEL -->
+    <div id="panel-inventory" class="panel">
+      <div class="table-card">
+        <div class="table-header">
+          <span class="table-title">Inventory Management</span>
+          <button class="btn-add" onclick="openClothModal()">+ Add Cloth</button>
+        </div>
+        <div style="padding:1rem 1.5rem;border-bottom:1px solid var(--border);">
+          <input class="search-input" placeholder="Search by type, colour, fabric…" oninput="filterTable(this.value,'clothTable')">
+        </div>
+        <div style="overflow-x:auto;">
+        <table id="clothTable">
+          <thead><tr><th>ID</th><th>Type</th><th>Fabric</th><th>Colour</th><th>Size</th><th>Price</th><th>MFD</th><th>Status</th><th>Designer</th><th>Actions</th></tr></thead>
+          <tbody></tbody>
+        </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- COMPLAINTS PANEL -->
+    <div id="panel-complaints" class="panel">
+      <div class="table-card">
+        <div class="table-header"><span class="table-title">Complaint Management</span></div>
+        <div style="overflow-x:auto;">
+        <table id="compTable">
+          <thead><tr><th>ID</th><th>Customer</th><th>Contact</th><th>Description</th><th>Date</th><th>Status</th><th>Solution</th><th>Actions</th></tr></thead>
+          <tbody></tbody>
+        </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- EMPLOYEES PANEL -->
+    <div id="panel-employees" class="panel">
+      <div class="table-card">
+        <div class="table-header"><span class="table-title">Employee Records</span></div>
+        <div style="overflow-x:auto;">
+        <table id="empTable">
+          <thead><tr><th>ID</th><th>Name</th><th>Designation</th><th>Branch</th><th>Contact</th><th>Salary</th></tr></thead>
+          <tbody></tbody>
+        </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ORDERS PANEL -->
+    <div id="panel-orders" class="panel">
+      <div class="table-card">
+        <div class="table-header"><span class="table-title">All Orders</span></div>
+        <div style="overflow-x:auto;">
+        <table id="ordTable">
+          <thead><tr><th>Order ID</th><th>Customer</th><th>Item</th><th>Colour</th><th>Size</th><th>Total</th><th>Date</th></tr></thead>
+          <tbody></tbody>
+        </table>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ADD/EDIT CLOTH MODAL -->
+<div class="modal-overlay" id="clothModal">
+  <div class="modal">
+    <div class="modal-head">
+      <h3 id="clothModalTitle">Add New Cloth</h3>
+      <button class="modal-close" onclick="closeModal('clothModal')">✕</button>
+    </div>
+    <div class="modal-body">
+      <input type="hidden" id="editClothId">
+      <div class="form-grid">
+        <div class="form-row">
+          <label class="form-label">Type</label>
+          <select class="form-select" id="cType">
+            <option>Shirt</option><option>Pant</option><option>Dress</option>
+            <option>Saree</option><option>Kurta</option><option>Jacket</option>
+            <option>Skirt</option><option>Suit</option>
+          </select>
+        </div>
+        <div class="form-row">
+          <label class="form-label">Fabric</label>
+          <select class="form-select" id="cFabric">
+            <option>Cotton</option><option>Silk</option><option>Wool</option>
+            <option>Polyester</option><option>Linen</option><option>Denim</option><option>Rayon</option>
+          </select>
+        </div>
+        <div class="form-row">
+          <label class="form-label">Colour</label>
+          <input class="form-input" id="cColour" placeholder="e.g. Sky Blue">
+        </div>
+        <div class="form-row">
+          <label class="form-label">Size</label>
+          <select class="form-select" id="cSize">
+            <option>XS</option><option>S</option><option>M</option>
+            <option>L</option><option>XL</option><option>XXL</option>
+          </select>
+        </div>
+        <div class="form-row">
+          <label class="form-label">Price (₹)</label>
+          <input class="form-input" id="cPrice" type="number" placeholder="0.00">
+        </div>
+        <div class="form-row">
+          <label class="form-label">Mfg. Date</label>
+          <input class="form-input" id="cMfd" type="date">
+        </div>
+      </div>
+      <div class="form-row">
+        <label class="form-label">Status</label>
+        <select class="form-select" id="cStatus"><option>In-Stock</option><option>Sold</option></select>
+      </div>
+      <div class="form-grid">
+        <div class="form-row">
+          <label class="form-label">Designer ID</label>
+          <select class="form-select" id="cDesigner"><option value="">— None —</option></select>
+        </div>
+        <div class="form-row">
+          <label class="form-label">Branch</label>
+          <select class="form-select" id="cBranch"></select>
+        </div>
+      </div>
+      <button class="btn-submit" onclick="saveCloth()">Save Cloth</button>
+      <p class="form-msg" id="clothMsg"></p>
+    </div>
+  </div>
+</div>
+
+<!-- RESOLVE COMPLAINT MODAL -->
+<div class="modal-overlay" id="resolveModal">
+  <div class="modal">
+    <div class="modal-head">
+      <h3>Resolve Complaint</h3>
+      <button class="modal-close" onclick="closeModal('resolveModal')">✕</button>
+    </div>
+    <div class="modal-body">
+      <input type="hidden" id="resolveId">
+      <div class="form-row">
+        <label class="form-label">Complaint</label>
+        <div id="resolveDesc" style="background:var(--surface2);padding:1rem;font-size:.85rem;color:var(--muted);border:1px solid var(--border);margin-bottom:1rem;"></div>
+      </div>
+      <div class="form-row">
+        <label class="form-label">Solution / Response</label>
+        <textarea class="solution-area" id="resolveSolution" placeholder="Describe the resolution…"></textarea>
+      </div>
+      <div class="form-row">
+        <label class="form-label">Status</label>
+        <select class="form-select" id="resolveStatus">
+          <option>Open</option><option>In-Progress</option><option>Resolved</option>
+        </select>
+      </div>
+      <button class="btn-submit" onclick="saveResolution()">Update Complaint</button>
+      <p class="form-msg" id="resolveMsg"></p>
+    </div>
+  </div>
+</div>
+
+<script>
+const API = 'http://localhost:3000/api';
+let designers=[], branches=[], clothData=[];
+
+// ── Tab switching ────────────────────────────────────────
+function switchTab(tab, el) {
+  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
+  document.getElementById('panel-'+tab).classList.add('active');
+  el.classList.add('active');
+  document.getElementById('topbarTitle').textContent = el.textContent.trim();
+
+  const loaders = { dashboard:loadDashboard, inventory:loadClothes, complaints:loadComplaints, employees:loadEmployees, orders:loadOrders };
+  if (loaders[tab]) loaders[tab]();
+}
+
+// ── Dashboard ─────────────────────────────────────────────
+async function loadDashboard() {
+  try {
+    const d = await fetch(`${API}/admin/dashboard`).then(r=>r.json());
+    document.getElementById('s-stock').textContent   = d.total_stock;
+    document.getElementById('s-sold').textContent    = d.total_sold;
+    document.getElementById('s-revenue').textContent = '₹'+Number(d.total_revenue).toLocaleString('en-IN');
+    document.getElementById('s-emp').textContent     = d.total_employees;
+    document.getElementById('s-cust').textContent    = d.total_customers;
+    document.getElementById('s-comp').textContent    = d.open_complaints;
+
+    // Bar chart
+    const maxRev = Math.max(...d.sales_by_type.map(x=>x.revenue),1);
+    document.getElementById('salesChart').innerHTML = d.sales_by_type.length
+      ? d.sales_by_type.map(s=>`
+          <div class="bar-row">
+            <span class="bar-label">${s.type}</span>
+            <div class="bar-track">
+              <div class="bar-fill" style="width:${(s.revenue/maxRev*100).toFixed(1)}%"></div>
+              <span class="bar-val">₹${Number(s.revenue).toLocaleString('en-IN')}</span>
+            </div>
+          </div>`).join('')
+      : '<p style="color:var(--muted);font-size:.85rem;">No sales data yet.</p>';
+
+    // Recent orders table
+    const tbody = document.querySelector('#recentOrdersTable tbody');
+    tbody.innerHTML = d.recent_orders.length
+      ? d.recent_orders.map(o=>`
+          <tr>
+            <td>${o.customer}</td>
+            <td>${o.type} ${o.colour}</td>
+            <td>₹${Number(o.total_price).toLocaleString('en-IN')}</td>
+            <td style="font-size:.75rem;color:var(--muted)">${new Date(o.order_date).toLocaleDateString('en-IN')}</td>
+          </tr>`).join('')
+      : '<tr><td colspan="4" style="color:var(--muted);text-align:center;padding:2rem;">No orders yet</td></tr>';
+  } catch(e) {
+    document.getElementById('statsGrid').innerHTML = `<div style="grid-column:1/-1;text-align:center;color:var(--muted);padding:3rem;">⚠️ Cannot connect to backend. Start the server at localhost:3000.</div>`;
+  }
+}
+
+// ── Inventory ─────────────────────────────────────────────
+async function loadClothes() {
+  const [clothRes, dRes, bRes] = await Promise.all([
+    fetch(`${API}/clothes?status=`).then(r=>r.json()).catch(()=>[]),
+    fetch(`${API}/designers`).then(r=>r.json()).catch(()=>[]),
+    fetch(`${API}/branches`).then(r=>r.json()).catch(()=>[]),
+  ]);
+  clothData = clothRes; designers = dRes; branches = bRes;
+
+  // Populate modal selects
+  document.getElementById('cDesigner').innerHTML =
+    '<option value="">— None —</option>' +
+    designers.map(d=>`<option value="${d.designer_id}">${d.name}</option>`).join('');
+  document.getElementById('cBranch').innerHTML =
+    branches.map(b=>`<option value="${b.branch_id}">${b.branch_name}</option>`).join('');
+
+  renderClothTable(clothData);
+}
+
+function renderClothTable(data) {
+  const tbody = document.querySelector('#clothTable tbody');
+  tbody.innerHTML = data.length
+    ? data.map(c=>`
+        <tr>
+          <td>#${c.cloth_id}</td>
+          <td>${c.type}</td>
+          <td>${c.fabric}</td>
+          <td>${c.colour}</td>
+          <td>${c.size}</td>
+          <td>₹${Number(c.price).toLocaleString('en-IN')}</td>
+          <td style="font-size:.75rem">${c.mfd?.split('T')[0]||''}</td>
+          <td><span class="badge ${c.status==='In-Stock'?'badge-stock':'badge-sold'}">${c.status}</span></td>
+          <td style="font-size:.75rem;color:var(--muted)">${c.designer_name||'—'}</td>
+          <td>
+            <button class="action-btn" onclick='editCloth(${JSON.stringify(c)})'>Edit</button>
+            <button class="action-btn del" onclick="deleteCloth(${c.cloth_id})">Del</button>
+          </td>
+        </tr>`).join('')
+    : '<tr><td colspan="10" style="text-align:center;color:var(--muted);padding:2rem;">No items</td></tr>';
+}
+
+function filterTable(q, tableId) {
+  const rows = document.querySelectorAll(`#${tableId} tbody tr`);
+  q = q.toLowerCase();
+  rows.forEach(r=>{ r.style.display = r.textContent.toLowerCase().includes(q)?'':'none'; });
+}
+
+function openClothModal(reset=true) {
+  if (reset) {
+    document.getElementById('clothModalTitle').textContent = 'Add New Cloth';
+    document.getElementById('editClothId').value = '';
+    document.getElementById('cColour').value = '';
+    document.getElementById('cPrice').value  = '';
+    document.getElementById('cMfd').value    = '';
+    document.getElementById('clothMsg').textContent = '';
+  }
+  document.getElementById('clothModal').classList.add('open');
+}
+function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+
+function editCloth(c) {
+  document.getElementById('clothModalTitle').textContent = 'Edit Cloth #'+c.cloth_id;
+  document.getElementById('editClothId').value = c.cloth_id;
+  document.getElementById('cType').value   = c.type;
+  document.getElementById('cFabric').value = c.fabric;
+  document.getElementById('cColour').value = c.colour;
+  document.getElementById('cSize').value   = c.size;
+  document.getElementById('cPrice').value  = c.price;
+  document.getElementById('cMfd').value    = c.mfd?.split('T')[0]||'';
+  document.getElementById('cStatus').value = c.status;
+  document.getElementById('cDesigner').value = c.designer_id||'';
+  document.getElementById('cBranch').value   = c.branch_id;
+  openClothModal(false);
+}
+
+async function saveCloth() {
+  const id = document.getElementById('editClothId').value;
+  const body = {
+    type:        document.getElementById('cType').value,
+    fabric:      document.getElementById('cFabric').value,
+    colour:      document.getElementById('cColour').value,
+    size:        document.getElementById('cSize').value,
+    price:       document.getElementById('cPrice').value,
+    mfd:         document.getElementById('cMfd').value,
+    status:      document.getElementById('cStatus').value,
+    designer_id: document.getElementById('cDesigner').value||null,
+    branch_id:   document.getElementById('cBranch').value,
+  };
+  const msg = document.getElementById('clothMsg');
+  try {
+    const url    = id ? `${API}/clothes/${id}` : `${API}/clothes`;
+    const method = id ? 'PUT' : 'POST';
+    const res = await fetch(url,{method,headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error);
+    msg.textContent = '✓ Saved successfully'; msg.style.color='var(--green)';
+    setTimeout(()=>{ closeModal('clothModal'); loadClothes(); },800);
+  } catch(e) { msg.textContent='✗ '+e.message; msg.style.color='var(--red)'; }
+}
+
+async function deleteCloth(id) {
+  if (!confirm('Delete cloth #'+id+'?')) return;
+  await fetch(`${API}/clothes/${id}`,{method:'DELETE'});
+  loadClothes();
+}
+
+// ── Complaints ────────────────────────────────────────────
+async function loadComplaints() {
+  const data = await fetch(`${API}/complaints`).then(r=>r.json()).catch(()=>[]);
+  const statusClass = {Open:'badge-open','In-Progress':'badge-progress',Resolved:'badge-resolved'};
+  document.querySelector('#compTable tbody').innerHTML = data.length
+    ? data.map(c=>`
+        <tr>
+          <td>#${c.complaint_id}</td>
+          <td>${c.customer_name}</td>
+          <td style="font-size:.75rem">${c.contact_no}</td>
+          <td style="max-width:200px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;" title="${c.description}">${c.description}</td>
+          <td style="font-size:.75rem;color:var(--muted)">${new Date(c.complaint_date).toLocaleDateString('en-IN')}</td>
+          <td><span class="badge ${statusClass[c.status]||''}">${c.status}</span></td>
+          <td style="max-width:180px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:var(--muted);font-size:.78rem" title="${c.solution||''}">${c.solution||'—'}</td>
+          <td><button class="action-btn" onclick='openResolve(${c.complaint_id},"${c.description.replace(/"/g,"'")}","${c.solution||''}","${c.status}")'>Resolve</button></td>
+        </tr>`).join('')
+    : '<tr><td colspan="8" style="text-align:center;color:var(--muted);padding:2rem;">No complaints</td></tr>';
+}
+
+function openResolve(id, desc, solution, status) {
+  document.getElementById('resolveId').value         = id;
+  document.getElementById('resolveDesc').textContent  = desc;
+  document.getElementById('resolveSolution').value    = solution;
+  document.getElementById('resolveStatus').value      = status;
+  document.getElementById('resolveMsg').textContent   = '';
+  document.getElementById('resolveModal').classList.add('open');
+}
+
+async function saveResolution() {
+  const id       = document.getElementById('resolveId').value;
+  const solution = document.getElementById('resolveSolution').value;
+  const status   = document.getElementById('resolveStatus').value;
+  const msg      = document.getElementById('resolveMsg');
+  try {
+    const res = await fetch(`${API}/complaints/${id}`,{
+      method:'PUT', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({solution, status})
+    });
+    const d = await res.json();
+    msg.textContent='✓ Updated'; msg.style.color='var(--green)';
+    setTimeout(()=>{ closeModal('resolveModal'); loadComplaints(); },700);
+  } catch(e) { msg.textContent='✗ Error'; msg.style.color='var(--red)'; }
+}
+
+// ── Employees ─────────────────────────────────────────────
+async function loadEmployees() {
+  const data = await fetch(`${API}/employees`).then(r=>r.json()).catch(()=>[]);
+  document.querySelector('#empTable tbody').innerHTML = data.length
+    ? data.map(e=>`
+        <tr>
+          <td>#${e.emp_id}</td>
+          <td>${e.name}</td>
+          <td>${e.designation}</td>
+          <td style="font-size:.78rem;color:var(--muted)">${e.branch_name}</td>
+          <td style="font-size:.78rem">${e.contact_no}</td>
+          <td>₹${Number(e.salary).toLocaleString('en-IN')}</td>
+        </tr>`).join('')
+    : '<tr><td colspan="6" style="text-align:center;color:var(--muted);padding:2rem;">No employees</td></tr>';
+}
+
+// ── Orders ────────────────────────────────────────────────
+async function loadOrders() {
+  const data = await fetch(`${API}/orders`).then(r=>r.json()).catch(()=>[]);
+  document.querySelector('#ordTable tbody').innerHTML = data.length
+    ? data.map(o=>`
+        <tr>
+          <td>#${o.order_id}</td>
+          <td>${o.customer_name}</td>
+          <td>${o.type}</td>
+          <td>${o.colour}</td>
+          <td>${o.size}</td>
+          <td>₹${Number(o.total_price).toLocaleString('en-IN')}</td>
+          <td style="font-size:.75rem;color:var(--muted)">${new Date(o.order_date).toLocaleDateString('en-IN')}</td>
+        </tr>`).join('')
+    : '<tr><td colspan="7" style="text-align:center;color:var(--muted);padding:2rem;">No orders yet</td></tr>';
+}
+
+// Init
+loadDashboard();
+
+// Logout
+function logout() {
+  if (confirm('Log out of the admin panel?')) {
+    sessionStorage.removeItem('velour_admin');
+    location.href = 'admin-login.html';
+  }
+}
+</script>
+</body>
+</html>

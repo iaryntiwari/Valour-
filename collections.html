@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Collections — VELOUR</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<link href="https://unpkg.com/aos@2.3.4/dist/aos.css" rel="stylesheet">
+<style>
+:root{--cream:#F5F0E8;--ink:#1A1612;--gold:#C9A96E;--rust:#B85C38;--muted:#8A7F74;--card:#FDFAF5;--dark:#0E0C0A;}
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{background:var(--dark);color:var(--cream);font-family:'DM Sans',sans-serif;overflow-x:hidden;}
+nav{position:fixed;top:0;left:0;right:0;z-index:500;display:flex;align-items:center;justify-content:space-between;padding:1.4rem 5rem;backdrop-filter:blur(16px);background:rgba(14,12,10,.88);border-bottom:1px solid rgba(201,169,110,.1);}
+.nav-logo{font-family:'Cormorant Garamond',serif;font-size:1.8rem;font-weight:300;letter-spacing:.3em;color:var(--cream);text-decoration:none;}
+.nav-logo span{color:var(--gold);}
+.nav-links{display:flex;gap:2.5rem;list-style:none;}
+.nav-links a{text-decoration:none;color:rgba(245,240,232,.5);font-size:.78rem;letter-spacing:.18em;text-transform:uppercase;transition:color .3s;}
+.nav-links a:hover,.nav-links a.current{color:var(--gold);}
+.nav-shop{background:var(--gold);color:var(--ink);padding:.65rem 1.5rem;text-decoration:none;font-size:.75rem;letter-spacing:.12em;text-transform:uppercase;font-weight:600;transition:all .3s;}
+.nav-shop:hover{background:var(--cream);}
+
+/* ── HERO ── */
+.coll-hero{min-height:100vh;position:relative;display:flex;align-items:flex-end;overflow:hidden;}
+.coll-hero-bg{position:absolute;inset:0;}
+.coll-hero-bg img{width:100%;height:100%;object-fit:cover;animation:heroZoom 20s ease-in-out infinite alternate;}
+@keyframes heroZoom{from{transform:scale(1);}to{transform:scale(1.06);}}
+.coll-hero-overlay{position:absolute;inset:0;background:linear-gradient(to top,rgba(14,12,10,.95) 0%,rgba(14,12,10,.3) 60%,transparent 100%);}
+.coll-hero-content{position:relative;z-index:2;padding:0 8rem 6rem;max-width:700px;}
+.coll-hero-season{font-size:.7rem;letter-spacing:.3em;text-transform:uppercase;color:var(--gold);margin-bottom:1.2rem;display:flex;align-items:center;gap:.8rem;}
+.coll-hero-season::before{content:'';width:2rem;height:1px;background:var(--gold);}
+.coll-hero-title{font-family:'Cormorant Garamond',serif;font-size:clamp(3rem,6vw,6rem);font-weight:300;line-height:1.05;margin-bottom:1.5rem;}
+.coll-hero-sub{font-size:.95rem;color:rgba(245,240,232,.6);line-height:1.8;max-width:480px;margin-bottom:2.5rem;}
+.coll-hero-btns{display:flex;gap:1rem;}
+.btn-coll-primary{background:var(--gold);color:var(--ink);padding:.9rem 2.5rem;text-decoration:none;font-size:.78rem;letter-spacing:.18em;text-transform:uppercase;font-weight:600;transition:all .3s;}
+.btn-coll-primary:hover{background:var(--cream);}
+.btn-coll-outline{border:1px solid rgba(245,240,232,.3);color:var(--cream);padding:.9rem 2.5rem;text-decoration:none;font-size:.78rem;letter-spacing:.18em;text-transform:uppercase;transition:all .3s;}
+.btn-coll-outline:hover{border-color:var(--gold);color:var(--gold);}
+
+/* ── COLLECTION TABS ── */
+.coll-tabs{display:flex;border-bottom:1px solid rgba(201,169,110,.12);padding:0 8rem;background:var(--dark);position:sticky;top:0;z-index:100;backdrop-filter:blur(12px);}
+.coll-tab{padding:1.2rem 2rem;font-size:.75rem;letter-spacing:.2em;text-transform:uppercase;color:rgba(245,240,232,.4);cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-1px;transition:all .3s;background:none;border-top:none;border-left:none;border-right:none;font-family:'DM Sans',sans-serif;}
+.coll-tab:hover{color:rgba(245,240,232,.7);}
+.coll-tab.active{color:var(--gold);border-bottom-color:var(--gold);}
+
+/* ── COLLECTION PANELS ── */
+.coll-panel{display:none;}
+.coll-panel.active{display:block;}
+
+/* ── FESTIVE ── */
+.festive-hero{position:relative;height:70vh;overflow:hidden;}
+.festive-hero img{width:100%;height:100%;object-fit:cover;}
+.festive-hero-overlay{position:absolute;inset:0;background:linear-gradient(135deg,rgba(14,12,10,.7),transparent);}
+.festive-hero-text{position:absolute;top:50%;left:8rem;transform:translateY(-50%);}
+.festive-tag{font-size:.68rem;letter-spacing:.25em;text-transform:uppercase;color:var(--gold);margin-bottom:1rem;}
+.festive-title{font-family:'Cormorant Garamond',serif;font-size:3.5rem;font-weight:300;color:var(--cream);}
+.festive-sub{font-size:.88rem;color:rgba(245,240,232,.6);margin-top:.8rem;}
+
+.editorial-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:2px;margin-bottom:2px;}
+.editorial-item{position:relative;overflow:hidden;cursor:pointer;}
+.editorial-item img{width:100%;height:400px;object-fit:cover;transition:transform .6s,filter .4s;}
+.editorial-item:hover img{transform:scale(1.06);filter:brightness(.8);}
+.editorial-caption{position:absolute;bottom:0;left:0;right:0;padding:1.5rem;background:linear-gradient(transparent,rgba(14,12,10,.8));transform:translateY(10px);opacity:0;transition:all .4s;}
+.editorial-item:hover .editorial-caption{opacity:1;transform:none;}
+.editorial-caption-type{font-size:.62rem;letter-spacing:.2em;text-transform:uppercase;color:var(--gold);}
+.editorial-caption-name{font-family:'Cormorant Garamond',serif;font-size:1.2rem;color:var(--cream);margin:.3rem 0;}
+.editorial-caption-price{font-size:.82rem;color:rgba(245,240,232,.6);}
+
+.editorial-wide{grid-column:span 2;}
+.editorial-wide img{height:400px;}
+
+.coll-story{padding:6rem 8rem;display:grid;grid-template-columns:1fr 1fr;gap:6rem;align-items:center;}
+.coll-story-img{position:relative;}
+.coll-story-img img{width:100%;height:500px;object-fit:cover;}
+.coll-story-img::before{content:'';position:absolute;top:2rem;left:2rem;right:-2rem;bottom:-2rem;border:1px solid rgba(201,169,110,.2);z-index:-1;}
+.coll-story-title{font-family:'Cormorant Garamond',serif;font-size:2.5rem;font-weight:300;margin-bottom:1.5rem;line-height:1.15;}
+.coll-story-text{font-size:.9rem;color:rgba(245,240,232,.55);line-height:1.9;margin-bottom:2rem;}
+.coll-story-link{display:inline-flex;align-items:center;gap:.75rem;color:var(--gold);font-size:.75rem;letter-spacing:.18em;text-transform:uppercase;text-decoration:none;border-bottom:1px solid rgba(201,169,110,.3);padding-bottom:.2rem;transition:all .3s;}
+.coll-story-link:hover{gap:1.2rem;border-color:var(--gold);}
+
+/* ── EVERYDAY ── */
+.everyday-intro{padding:6rem 8rem;text-align:center;}
+.everyday-title{font-family:'Cormorant Garamond',serif;font-size:4rem;font-weight:300;color:var(--cream);margin-bottom:1rem;}
+.everyday-sub{font-size:.95rem;color:rgba(245,240,232,.5);max-width:500px;margin:0 auto 3rem;line-height:1.8;}
+.everyday-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:2px;}
+.everyday-item{position:relative;overflow:hidden;cursor:pointer;aspect-ratio:3/4;}
+.everyday-item img{width:100%;height:100%;object-fit:cover;transition:transform .6s;}
+.everyday-item:hover img{transform:scale(1.06);}
+.everyday-item-overlay{position:absolute;inset:0;background:rgba(14,12,10,0);transition:background .4s;display:flex;flex-direction:column;justify-content:flex-end;padding:1.5rem;}
+.everyday-item:hover .everyday-item-overlay{background:rgba(14,12,10,.5);}
+.everyday-item-info{transform:translateY(15px);opacity:0;transition:all .4s;}
+.everyday-item:hover .everyday-item-info{transform:none;opacity:1;}
+.everyday-item-name{font-family:'Cormorant Garamond',serif;font-size:1.1rem;color:var(--cream);}
+.everyday-item-price{font-size:.78rem;color:var(--gold);margin-top:.2rem;}
+
+.comfort-section{padding:6rem 8rem;display:grid;grid-template-columns:1fr 1fr;gap:5rem;align-items:center;}
+.comfort-feature{display:flex;gap:1.5rem;margin-bottom:2.5rem;align-items:flex-start;}
+.comfort-num{font-family:'Cormorant Garamond',serif;font-size:3rem;font-weight:300;color:rgba(201,169,110,.2);line-height:1;flex-shrink:0;transition:color .3s;}
+.comfort-feature:hover .comfort-num{color:var(--gold);}
+.comfort-feat-title{font-family:'Cormorant Garamond',serif;font-size:1.3rem;margin-bottom:.5rem;}
+.comfort-feat-desc{font-size:.84rem;color:rgba(245,240,232,.5);line-height:1.7;}
+.comfort-image{position:relative;}
+.comfort-image img{width:100%;height:550px;object-fit:cover;}
+.comfort-image::after{content:'Everyday Edit';font-family:'Cormorant Garamond',serif;font-size:5rem;font-weight:300;color:rgba(201,169,110,.05);position:absolute;bottom:2rem;right:1rem;white-space:nowrap;line-height:1;}
+
+/* ── FORMAL ── */
+.formal-hero-split{display:grid;grid-template-columns:1fr 1fr;height:80vh;}
+.formal-split-img{overflow:hidden;position:relative;}
+.formal-split-img img{width:100%;height:100%;object-fit:cover;transition:transform .6s;}
+.formal-split-img:hover img{transform:scale(1.04);}
+.formal-split-text{display:flex;flex-direction:column;justify-content:center;padding:6rem 5rem;background:rgba(201,169,110,.03);}
+.formal-tag{font-size:.68rem;letter-spacing:.25em;text-transform:uppercase;color:var(--gold);margin-bottom:1.2rem;}
+.formal-title{font-family:'Cormorant Garamond',serif;font-size:3.5rem;font-weight:300;line-height:1.1;margin-bottom:1.5rem;}
+.formal-desc{font-size:.88rem;color:rgba(245,240,232,.55);line-height:1.8;margin-bottom:2.5rem;}
+.formal-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:2px;}
+.formal-item{position:relative;overflow:hidden;cursor:pointer;}
+.formal-item img{width:100%;height:480px;object-fit:cover;transition:all .5s;}
+.formal-item:hover img{transform:scale(1.04);filter:brightness(.8);}
+.formal-label{position:absolute;bottom:1.5rem;left:1.5rem;}
+.formal-label-type{font-size:.62rem;letter-spacing:.2em;text-transform:uppercase;color:var(--gold);}
+.formal-label-name{font-family:'Cormorant Garamond',serif;font-size:1.3rem;color:var(--cream);}
+
+/* ── CTA BAND ── */
+.cta-band{padding:6rem 8rem;background:var(--gold);display:flex;align-items:center;justify-content:space-between;}
+.cta-band-text h2{font-family:'Cormorant Garamond',serif;font-size:3rem;font-weight:300;color:var(--ink);}
+.cta-band-text p{font-size:.88rem;color:rgba(26,22,18,.6);margin-top:.5rem;}
+.cta-band-btn{background:var(--ink);color:var(--cream);padding:1rem 3rem;text-decoration:none;font-size:.8rem;letter-spacing:.2em;text-transform:uppercase;transition:all .3s;flex-shrink:0;}
+.cta-band-btn:hover{background:rgba(26,22,18,.8);}
+
+/* FOOTER */
+footer{background:var(--dark);border-top:1px solid rgba(201,169,110,.08);padding:2.5rem 8rem;display:flex;justify-content:space-between;align-items:center;font-size:.75rem;color:rgba(245,240,232,.25);}
+footer a{color:rgba(201,169,110,.4);text-decoration:none;}
+
+@media(max-width:1000px){
+  nav{padding:1rem 2rem;}
+  .coll-hero-content{padding:0 2rem 4rem;}
+  .coll-tabs{padding:0 2rem;overflow-x:auto;}
+  .festive-hero-text{left:2rem;}
+  .editorial-grid,.everyday-grid,.formal-grid{grid-template-columns:1fr 1fr;}
+  .editorial-wide{grid-column:span 1;}
+  .coll-story,.comfort-section,.formal-hero-split{grid-template-columns:1fr;gap:2rem;}
+  .coll-story,.comfort-section,.formal-hero-split{padding:3rem 2rem;}
+  .everyday-intro,.cta-band{padding:4rem 2rem;}
+  footer{padding:2rem;}
+}
+</style>
+</head>
+<body>
+
+<nav>
+  <a href="index.html" class="nav-logo">VEL<span>O</span>UR</a>
+  <ul class="nav-links">
+    <li><a href="catalog.html">Shop</a></li>
+    <li><a href="collections.html" class="current">Collections</a></li>
+    <li><a href="index.html#support">Support</a></li>
+    <li><a href="admin-login.html">Admin</a></li>
+  </ul>
+  <a href="catalog.html" class="nav-shop">Shop Now</a>
+</nav>
+
+<!-- HERO -->
+<div class="coll-hero">
+  <div class="coll-hero-bg">
+    <img src="https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=1800&q=85" alt="Collections">
+  </div>
+  <div class="coll-hero-overlay"></div>
+  <div class="coll-hero-content" data-aos="fade-up">
+    <div class="coll-hero-season">Season 2024</div>
+    <h1 class="coll-hero-title">Stories<br>Told in<br><em style="color:var(--gold)">Fabric</em></h1>
+    <p class="coll-hero-sub">Three curated collections. Three distinct stories. Each one a carefully composed wardrobe for a different chapter of life.</p>
+    <div class="coll-hero-btns">
+      <a href="#festive" class="btn-coll-primary" onclick="switchCollection('festive');return false;">Festive Edit</a>
+      <a href="#everyday" class="btn-coll-outline" onclick="switchCollection('everyday');return false;">Everyday</a>
+    </div>
+  </div>
+</div>
+
+<!-- TABS -->
+<div class="coll-tabs" id="collTabs">
+  <button class="coll-tab active" onclick="switchCollection('festive')" id="tab-festive">✦ Festive 2024</button>
+  <button class="coll-tab" onclick="switchCollection('everyday')" id="tab-everyday">☀ Everyday Comfort</button>
+  <button class="coll-tab" onclick="switchCollection('formal')" id="tab-formal">◆ The Power Suit</button>
+</div>
+
+<!-- FESTIVE COLLECTION -->
+<div class="coll-panel active" id="panel-festive">
+  <div class="festive-hero" id="festive">
+    <img src="https://images.unsplash.com/photo-1610030469983-98e550d6193c?w=1800&q=85" alt="Festive Collection">
+    <div class="festive-hero-overlay"></div>
+    <div class="festive-hero-text" data-aos="fade-right">
+      <div class="festive-tag">Festive Collection 2024</div>
+      <div class="festive-title">The Celebration<br><em style="font-style:italic;">Edit</em></div>
+      <div class="festive-sub">For every occasion that deserves to be remembered</div>
+    </div>
+  </div>
+
+  <div class="editorial-grid" data-aos="fade-up">
+    <div class="editorial-item" onclick="location.href='catalog.html?type=Saree'">
+      <img src="https://images.unsplash.com/photo-1583391733956-3750e0ff4e8b?w=700&q=80" alt="Saree">
+      <div class="editorial-caption"><div class="editorial-caption-type">Silk · Handwoven</div><div class="editorial-caption-name">Banarasi Silk Sarees</div><div class="editorial-caption-price">From ₹ 3,500</div></div>
+    </div>
+    <div class="editorial-item editorial-wide" onclick="location.href='catalog.html?type=Kurta'">
+      <img src="https://images.unsplash.com/photo-1622519407650-3df9883f76a5?w=1000&q=80" alt="Festive Kurta">
+      <div class="editorial-caption"><div class="editorial-caption-type">Cotton · Embroidered</div><div class="editorial-caption-name">Festive Kurta Sets</div><div class="editorial-caption-price">From ₹ 999</div></div>
+    </div>
+  </div>
+  <div class="editorial-grid" data-aos="fade-up">
+    <div class="editorial-item editorial-wide" onclick="location.href='catalog.html?type=Dress'">
+      <img src="https://images.unsplash.com/photo-1515372039744-b8f02a3ae446?w=1000&q=80" alt="Dress">
+      <div class="editorial-caption"><div class="editorial-caption-type">Polyester · Designer</div><div class="editorial-caption-name">Evening Dresses</div><div class="editorial-caption-price">From ₹ 2,200</div></div>
+    </div>
+    <div class="editorial-item" onclick="location.href='catalog.html?type=Suit'">
+      <img src="https://images.unsplash.com/photo-1507679799987-c73779587ccf?w=700&q=80" alt="Suit">
+      <div class="editorial-caption"><div class="editorial-caption-type">Wool · Bespoke</div><div class="editorial-caption-name">Celebration Suits</div><div class="editorial-caption-price">From ₹ 7,000</div></div>
+    </div>
+  </div>
+
+  <div class="coll-story" data-aos="fade-up">
+    <div class="coll-story-img">
+      <img src="https://images.unsplash.com/photo-1573408301185-9519f94816f5?w=700&q=80" alt="Story">
+    </div>
+    <div>
+      <div style="font-size:.68rem;letter-spacing:.25em;text-transform:uppercase;color:var(--gold);margin-bottom:1rem;">The Story Behind</div>
+      <div class="coll-story-title">Crafted for the<br>Moments That Matter</div>
+      <div class="coll-story-text">The Festive Edit was born from a simple belief — that what you wear to a celebration should feel as special as the occasion itself. We spent six months sourcing silks from Varanasi, embroidered kurtas from Lucknow, and evening wear designed by Manish Malhotra's studio. Every piece is a story waiting to be told.</div>
+      <a href="catalog.html" class="coll-story-link">Shop Festive Collection →</a>
+    </div>
+  </div>
+</div>
+
+<!-- EVERYDAY COLLECTION -->
+<div class="coll-panel" id="panel-everyday">
+  <div class="everyday-intro" id="everyday">
+    <div style="font-size:.68rem;letter-spacing:.25em;text-transform:uppercase;color:var(--gold);margin-bottom:1rem;">Everyday Comfort</div>
+    <div class="everyday-title">Dressed to<br><em style="font-style:italic;font-family:'Cormorant Garamond',serif;">Live In</em></div>
+    <div class="everyday-sub">Comfort isn't the absence of style. It's the foundation of it. Our everyday collection is built for real life — breathable, durable, effortlessly elegant.</div>
+  </div>
+  <div class="everyday-grid" data-aos="fade-up">
+    <div class="everyday-item" onclick="location.href='catalog.html?type=Shirt'">
+      <img src="https://images.unsplash.com/photo-1602810318383-e386cc2a3ccf?w=600&q=80" alt="Shirt">
+      <div class="everyday-item-overlay"><div class="everyday-item-info"><div class="everyday-item-name">Cotton Shirts</div><div class="everyday-item-price">From ₹ 799</div></div></div>
+    </div>
+    <div class="everyday-item" onclick="location.href='catalog.html?type=Pant'">
+      <img src="https://images.unsplash.com/photo-1542272604-787c3835535d?w=600&q=80" alt="Pant">
+      <div class="everyday-item-overlay"><div class="everyday-item-info"><div class="everyday-item-name">Denim Pants</div><div class="everyday-item-price">From ₹ 1,200</div></div></div>
+    </div>
+    <div class="everyday-item" onclick="location.href='catalog.html?type=Kurta'">
+      <img src="https://images.unsplash.com/photo-1614252369475-531eba835eb1?w=600&q=80" alt="Kurta">
+      <div class="everyday-item-overlay"><div class="everyday-item-info"><div class="everyday-item-name">Casual Kurtas</div><div class="everyday-item-price">From ₹ 999</div></div></div>
+    </div>
+    <div class="everyday-item" onclick="location.href='catalog.html?type=Skirt'">
+      <img src="https://images.unsplash.com/photo-1583496661160-fb5218afa9a3?w=600&q=80" alt="Skirt">
+      <div class="everyday-item-overlay"><div class="everyday-item-info"><div class="everyday-item-name">Linen Skirts</div><div class="everyday-item-price">From ₹ 1,100</div></div></div>
+    </div>
+  </div>
+  <div class="comfort-section" data-aos="fade-up">
+    <div>
+      <div style="font-size:.68rem;letter-spacing:.25em;text-transform:uppercase;color:var(--gold);margin-bottom:1rem;">Why Everyday</div>
+      <div class="coll-story-title" style="margin-bottom:2.5rem;">Designed for<br>Real Life</div>
+      <div class="comfort-feature"><div class="comfort-num">01</div><div><div class="comfort-feat-title">Breathable Materials</div><div class="comfort-feat-desc">100% natural fibres — cotton, linen, rayon — that keep you cool through India's warmest months.</div></div></div>
+      <div class="comfort-feature"><div class="comfort-num">02</div><div><div class="comfort-feat-title">Easy Care</div><div class="comfort-feat-desc">Machine-washable. Wrinkle-resistant. No dry-cleaning bills, no complicated routines.</div></div></div>
+      <div class="comfort-feature"><div class="comfort-num">03</div><div><div class="comfort-feat-title">All-Day Comfort</div><div class="comfort-feat-desc">From Monday meetings to weekend markets — our everyday pieces move with you, not against you.</div></div></div>
+      <a href="catalog.html" class="coll-story-link" style="margin-top:1rem;display:inline-flex;">Shop Everyday →</a>
+    </div>
+    <div class="comfort-image">
+      <img src="https://images.unsplash.com/photo-1489987707025-afc232f7ea0f?w=700&q=80" alt="Everyday Comfort">
+    </div>
+  </div>
+</div>
+
+<!-- FORMAL COLLECTION -->
+<div class="coll-panel" id="panel-formal">
+  <div class="formal-hero-split" id="formal">
+    <div class="formal-split-img">
+      <img src="https://images.unsplash.com/photo-1548538557-31e93c31e0a4?w=900&q=85" alt="Power Suit">
+    </div>
+    <div class="formal-split-text" data-aos="fade-left">
+      <div class="formal-tag">Formal Collection 2024</div>
+      <div class="formal-title">The Power<br><em style="font-style:italic;color:var(--gold);">Suit</em></div>
+      <div class="formal-desc">Authority isn't loud. It's the perfectly cut collar, the exact weight of wool, the quiet confidence of knowing you're dressed right. Our formal collection is designed by Manish Malhotra with exactly that in mind.</div>
+      <a href="catalog.html?type=Suit" class="coll-story-link">Shop Formals →</a>
+    </div>
+  </div>
+  <div class="formal-grid" data-aos="fade-up">
+    <div class="formal-item" onclick="location.href='catalog.html?type=Suit'">
+      <img src="https://images.unsplash.com/photo-1594938298603-c8148c4dae35?w=700&q=80" alt="Suit">
+      <div class="formal-label"><div class="formal-label-type">Wool · Tailored</div><div class="formal-label-name">Grey Business Suit</div></div>
+    </div>
+    <div class="formal-item" onclick="location.href='catalog.html?type=Jacket'">
+      <img src="https://images.unsplash.com/photo-1591047139829-d91aecb6caea?w=700&q=80" alt="Jacket">
+      <div class="formal-label"><div class="formal-label-type">Wool Blend</div><div class="formal-label-name">Structured Jacket</div></div>
+    </div>
+    <div class="formal-item" onclick="location.href='catalog.html?type=Shirt'">
+      <img src="https://images.unsplash.com/photo-1596755094514-f87e34085b2c?w=700&q=80" alt="Formal Shirt">
+      <div class="formal-label"><div class="formal-label-type">Egyptian Cotton</div><div class="formal-label-name">Dress Shirts</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- CTA -->
+<div class="cta-band" data-aos="fade-up">
+  <div class="cta-band-text">
+    <h2>Ready to Shop?</h2>
+    <p>Browse our full catalog — all types, fabrics, and sizes in one place.</p>
+  </div>
+  <a href="catalog.html" class="cta-band-btn">Visit Catalog →</a>
+</div>
+
+<footer>
+  <span>© 2024 VELOUR Garment Store. DBMS College Project.</span>
+  <span><a href="index.html">Home</a> · <a href="catalog.html">Shop</a> · <a href="admin-login.html">Admin</a></span>
+</footer>
+
+<script src="https://unpkg.com/aos@2.3.4/dist/aos.js"></script>
+<script>
+AOS.init({duration:900,once:true,easing:'ease-out-cubic'});
+
+function switchCollection(id) {
+  document.querySelectorAll('.coll-panel').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.coll-tab').forEach(t=>t.classList.remove('active'));
+  document.getElementById('panel-'+id).classList.add('active');
+  document.getElementById('tab-'+id).classList.add('active');
+  window.scrollTo({top:document.getElementById('collTabs').offsetTop-10,behavior:'smooth'});
+  AOS.refreshHard();
+}
+
+// Check URL hash
+const hash = location.hash.replace('#','');
+if(['festive','everyday','formal'].includes(hash)) switchCollection(hash);
+</script>
+</body>
+</html>

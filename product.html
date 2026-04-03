@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Product — VELOUR</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root{--cream:#F5F0E8;--ink:#1A1612;--gold:#C9A96E;--rust:#B85C38;--muted:#8A7F74;--card:#FDFAF5;--border:rgba(201,169,110,.18);}
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{background:var(--cream);color:var(--ink);font-family:'DM Sans',sans-serif;}
+nav{position:fixed;top:0;left:0;right:0;z-index:200;display:flex;align-items:center;justify-content:space-between;padding:1.1rem 4rem;backdrop-filter:blur(14px);background:rgba(245,240,232,.93);border-bottom:1px solid var(--border);}
+.nav-logo{font-family:'Cormorant Garamond',serif;font-size:1.7rem;font-weight:300;letter-spacing:.3em;color:var(--ink);text-decoration:none;}
+.nav-logo span{color:var(--gold);}
+.nav-back{font-size:.72rem;letter-spacing:.15em;text-transform:uppercase;color:var(--muted);text-decoration:none;transition:color .2s;}
+.nav-back:hover{color:var(--gold);}
+.breadcrumb{padding:5.5rem 5rem 1.2rem;display:flex;align-items:center;gap:.5rem;font-size:.68rem;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);}
+.breadcrumb a{color:var(--muted);text-decoration:none;}
+.breadcrumb a:hover{color:var(--gold);}
+.bc-sep{opacity:.35;}
+
+/* 3-col grid */
+.product-page{display:grid;grid-template-columns:1fr 1fr 290px;gap:0;min-height:80vh;padding:0 0 4rem;}
+
+/* IMAGE */
+.img-col{padding:0 2rem 0 5rem;}
+.main-img{width:100%;aspect-ratio:3/4;overflow:hidden;background:#ece7de;position:relative;border:1px solid var(--border);}
+.main-img img{width:100%;height:100%;object-fit:cover;display:block;transition:opacity .3s;}
+.main-img img.fading{opacity:0;}
+.ribbon{position:absolute;top:.9rem;left:.9rem;font-size:.6rem;letter-spacing:.12em;text-transform:uppercase;font-weight:700;padding:.3rem .8rem;}
+.ribbon-stock{background:#4CAF50;color:#fff;}
+.ribbon-sold{background:var(--rust);color:#fff;}
+.thumbs{display:flex;gap:.5rem;margin-top:.7rem;}
+.thumb{width:62px;height:72px;overflow:hidden;cursor:pointer;border:2px solid transparent;opacity:.5;background:#ece7de;transition:all .25s;flex-shrink:0;}
+.thumb.on{border-color:var(--gold);opacity:1;}
+.thumb:hover{opacity:.85;}
+.thumb img{width:100%;height:100%;object-fit:cover;display:block;}
+
+/* DETAILS */
+.details-col{padding:0 2.5rem;}
+.type-tag{font-size:.65rem;letter-spacing:.22em;text-transform:uppercase;color:var(--gold);margin-bottom:.75rem;display:flex;align-items:center;gap:.6rem;}
+.type-tag::before{content:'';width:1.4rem;height:1px;background:var(--gold);}
+.prod-name{font-family:'Cormorant Garamond',serif;font-size:clamp(2rem,2.8vw,2.6rem);font-weight:300;line-height:1.1;margin-bottom:.5rem;}
+.colour-chip{display:inline-flex;align-items:center;gap:.5rem;font-size:.72rem;color:var(--muted);margin-bottom:1.2rem;letter-spacing:.05em;}
+.colour-dot{width:12px;height:12px;border-radius:50%;border:1px solid rgba(0,0,0,.12);}
+.prod-price{font-family:'Cormorant Garamond',serif;font-size:1.9rem;font-weight:300;margin-bottom:.25rem;}
+.prod-price-note{font-size:.7rem;color:var(--muted);margin-bottom:1.8rem;}
+.specs{width:100%;border-collapse:collapse;margin-bottom:2rem;border:1px solid var(--border);}
+.specs tr:not(:last-child){border-bottom:1px solid rgba(201,169,110,.08);}
+.specs td{padding:.65rem 1rem;font-size:.85rem;}
+.specs td:first-child{font-size:.62rem;letter-spacing:.16em;text-transform:uppercase;color:var(--muted);width:36%;background:rgba(201,169,110,.04);font-weight:500;}
+.s-stock{color:#4CAF50;font-weight:600;}
+.s-sold{color:var(--rust);font-weight:600;}
+.qty-row{display:flex;gap:.65rem;align-items:stretch;margin-bottom:.75rem;}
+.qty-wrap{display:flex;align-items:center;border:1.5px solid var(--border);background:white;}
+.q-btn{width:38px;height:46px;background:none;border:none;cursor:pointer;font-size:1.1rem;color:var(--ink);transition:background .2s;display:flex;align-items:center;justify-content:center;}
+.q-btn:hover{background:rgba(201,169,110,.1);}
+.q-num{width:40px;text-align:center;font-size:.9rem;font-weight:500;border-left:1px solid rgba(201,169,110,.2);border-right:1px solid rgba(201,169,110,.2);display:flex;align-items:center;justify-content:center;}
+.btn-cart{flex:1;background:var(--ink);color:var(--cream);border:none;padding:.85rem 1.2rem;font-family:'DM Sans',sans-serif;font-size:.75rem;letter-spacing:.18em;text-transform:uppercase;cursor:pointer;transition:background .3s;}
+.btn-cart:hover{background:var(--gold);}
+.btn-cart:disabled{background:var(--muted);cursor:not-allowed;}
+.btn-continue{display:block;text-align:center;padding:.65rem;border:1px solid var(--border);color:var(--muted);font-size:.72rem;letter-spacing:.1em;text-transform:uppercase;text-decoration:none;transition:all .25s;margin-bottom:1.5rem;}
+.btn-continue:hover{border-color:var(--gold);color:var(--gold);}
+.cart-msg{font-size:.8rem;min-height:1.2em;text-align:center;margin-top:.3rem;}
+.fabric-blurb{padding:1.2rem 1.4rem;background:rgba(201,169,110,.05);border-left:3px solid var(--gold);margin-bottom:1.4rem;}
+.fabric-blurb-title{font-size:.62rem;letter-spacing:.18em;text-transform:uppercase;color:var(--gold);margin-bottom:.4rem;}
+.fabric-blurb-text{font-size:.82rem;color:var(--ink);line-height:1.7;opacity:.75;}
+.care{display:flex;gap:1.2rem;flex-wrap:wrap;margin-bottom:1.4rem;}
+.care-item{display:flex;flex-direction:column;align-items:center;gap:.25rem;font-size:.6rem;letter-spacing:.07em;text-transform:uppercase;color:var(--muted);}
+.care-item span{font-size:1.2rem;}
+.designer-row{display:flex;align-items:center;gap:.9rem;padding:.9rem 1rem;border:1px solid var(--border);background:white;}
+.d-ava{width:40px;height:40px;border-radius:50%;flex-shrink:0;background:linear-gradient(135deg,var(--gold),var(--rust));display:flex;align-items:center;justify-content:center;font-size:.9rem;}
+.d-label{font-size:.58rem;letter-spacing:.15em;text-transform:uppercase;color:var(--gold);}
+.d-name{font-family:'Cormorant Garamond',serif;font-size:1rem;font-weight:300;}
+.d-bio{font-size:.72rem;color:var(--muted);margin-top:.15rem;line-height:1.4;}
+
+/* MORE OPTIONS column */
+.options-col{border-left:1px solid var(--border);background:var(--card);padding:0;max-height:calc(100vh - 5rem);position:sticky;top:5rem;overflow:hidden;display:flex;flex-direction:column;}
+.options-header{padding:1.2rem 1.4rem;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;flex-shrink:0;}
+.options-title{font-size:.65rem;letter-spacing:.2em;text-transform:uppercase;color:var(--ink);font-weight:500;}
+.options-count{font-size:.65rem;color:var(--muted);}
+.options-scroll{flex:1;overflow-y:auto;padding:.8rem;}
+.options-scroll::-webkit-scrollbar{width:3px;}
+.options-scroll::-webkit-scrollbar-thumb{background:rgba(201,169,110,.3);border-radius:2px;}
+.option-card{display:flex;gap:.75rem;align-items:center;padding:.75rem;cursor:pointer;border:1.5px solid transparent;background:white;margin-bottom:.6rem;transition:all .25s;}
+.option-card:hover{border-color:rgba(201,169,110,.35);background:var(--cream);}
+.option-card.current{border-color:var(--gold);background:rgba(201,169,110,.06);}
+.option-thumb{width:52px;height:62px;overflow:hidden;background:#ece7de;flex-shrink:0;}
+.option-thumb img{width:100%;height:100%;object-fit:cover;display:block;}
+.option-info{flex:1;min-width:0;}
+.option-fabric{font-size:.6rem;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:.2rem;}
+.option-name{font-size:.82rem;font-weight:500;color:var(--ink);display:flex;align-items:center;gap:.4rem;}
+.option-price{font-size:.78rem;color:var(--gold);margin-top:.15rem;}
+.option-size{font-size:.6rem;background:rgba(201,169,110,.15);color:var(--gold);padding:.15rem .45rem;flex-shrink:0;}
+.options-empty{text-align:center;padding:2rem 1rem;color:var(--muted);font-size:.82rem;line-height:1.6;}
+
+/* RELATED */
+.related-section{padding:3.5rem 5rem;background:#EDE8DF;border-top:1px solid var(--border);}
+.related-label{font-size:.65rem;letter-spacing:.22em;text-transform:uppercase;color:var(--gold);margin-bottom:.5rem;}
+.related-title{font-family:'Cormorant Garamond',serif;font-size:1.8rem;font-weight:300;margin-bottom:1.5rem;}
+.related-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:1rem;}
+.rel-card{background:white;border:1px solid var(--border);cursor:pointer;overflow:hidden;transition:transform .3s,box-shadow .3s;}
+.rel-card:hover{transform:translateY(-3px);box-shadow:0 10px 25px rgba(0,0,0,.08);}
+.rel-card img{width:100%;height:180px;object-fit:cover;display:block;transition:transform .4s;}
+.rel-card:hover img{transform:scale(1.04);}
+.rel-info{padding:.8rem 1rem;}
+.rel-name{font-family:'Cormorant Garamond',serif;font-size:.95rem;font-weight:300;}
+.rel-price{font-size:.75rem;color:var(--gold);margin-top:.2rem;}
+
+.loading-wrap{min-height:60vh;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:1rem;}
+.spinner{width:32px;height:32px;border:2px solid rgba(201,169,110,.2);border-top-color:var(--gold);border-radius:50%;animation:spin .75s linear infinite;}
+@keyframes spin{to{transform:rotate(360deg);}}
+
+@media(max-width:1100px){
+  .product-page{grid-template-columns:1fr 1fr;}
+  .options-col{grid-column:1/-1;position:static;max-height:260px;border-left:none;border-top:1px solid var(--border);}
+  .options-scroll{flex-direction:row;display:flex;gap:.6rem;overflow-x:auto;overflow-y:hidden;}
+  .option-card{flex-direction:column;width:110px;flex-shrink:0;margin-bottom:0;}
+  .option-thumb{width:100%;height:90px;}
+}
+@media(max-width:768px){
+  nav{padding:1rem 1.5rem;}
+  .breadcrumb{padding:5rem 1.5rem .8rem;}
+  .product-page{grid-template-columns:1fr;padding:0 0 3rem;}
+  .img-col,.details-col{padding:0 1.5rem;}
+  .related-section{padding:3rem 1.5rem;}
+  .related-grid{grid-template-columns:1fr 1fr;}
+}
+</style>
+</head>
+<body>
+<nav>
+  <a href="index.html" class="nav-logo">VEL<span>O</span>UR</a>
+  <a href="catalog.html" class="nav-back">← Back to Catalog</a>
+</nav>
+<div class="breadcrumb">
+  <a href="index.html">Home</a><span class="bc-sep">/</span>
+  <a href="catalog.html">Catalog</a><span class="bc-sep">/</span>
+  <span id="bcProduct">Product</span>
+</div>
+<div id="mainContent">
+  <div class="loading-wrap">
+    <div class="spinner"></div>
+    <p style="color:var(--muted);font-size:.8rem;">Loading product…</p>
+  </div>
+</div>
+<script>
+const API='http://localhost:3000/api';
+let qty=1;
+
+const imgBank={
+  Saree:['https://images.unsplash.com/photo-1610030469983-98e550d6193c?w=800&q=85','https://images.unsplash.com/photo-1583391733956-3750e0ff4e8b?w=800&q=85','https://images.unsplash.com/photo-1573408301185-9519f94816f5?w=800&q=85'],
+  Shirt:['https://images.unsplash.com/photo-1602810318383-e386cc2a3ccf?w=800&q=85','https://images.unsplash.com/photo-1596755094514-f87e34085b2c?w=800&q=85','https://images.unsplash.com/photo-1618354691373-d851c5c3a990?w=800&q=85'],
+  Kurta:['https://images.unsplash.com/photo-1622519407650-3df9883f76a5?w=800&q=85','https://images.unsplash.com/photo-1614252369475-531eba835eb1?w=800&q=85','https://images.unsplash.com/photo-1609710228159-0fa9bd7c0827?w=800&q=85'],
+  Suit:['https://images.unsplash.com/photo-1617127365659-c47fa864d8bc?w=800&q=85','https://images.unsplash.com/photo-1594938298603-c8148c4dae35?w=800&q=85','https://images.unsplash.com/photo-1548538557-31e93c31e0a4?w=800&q=85'],
+  Pant:['https://images.unsplash.com/photo-1542272604-787c3835535d?w=800&q=85','https://images.unsplash.com/photo-1473966968600-fa801b869a1a?w=800&q=85','https://images.unsplash.com/photo-1624378439575-d8705ad7ae80?w=800&q=85'],
+  Dress:['https://images.unsplash.com/photo-1515372039744-b8f02a3ae446?w=800&q=85','https://images.unsplash.com/photo-1566174053879-31528523f8ae?w=800&q=85','https://images.unsplash.com/photo-1572804013427-4d7ca7268217?w=800&q=85'],
+  Jacket:['https://images.unsplash.com/photo-1551028719-00167b16eac5?w=800&q=85','https://images.unsplash.com/photo-1591047139829-d91aecb6caea?w=800&q=85','https://images.unsplash.com/photo-1544923246-77307dd654cb?w=800&q=85'],
+  Skirt:['https://images.unsplash.com/photo-1551163943-3f7253a8b4e6?w=800&q=85','https://images.unsplash.com/photo-1571945153237-4929e783af4a?w=800&q=85','https://images.unsplash.com/photo-1595777457583-95e059d581b8?w=800&q=85'],
+};
+function getImgs(type){return imgBank[type]||imgBank.Shirt;}
+
+const colourHex={'Red':'#c0392b','Blue':'#2980b9','Sky Blue':'#87ceeb','White':'#f0f0f0','Black':'#1a1a1a','Grey':'#9e9e9e','Navy':'#001f5b','Charcoal':'#36454F','Beige':'#d4b896','Brown':'#795548','Khaki':'#c8b560','Green':'#2e7d32','Pink':'#e91e8c','Yellow':'#f9a825','Orange':'#e65100','Purple':'#6a1b9a'};
+const fabricText={Silk:'Woven in Varanasi — India\'s silk capital. Each thread reeled from mulberry silkworm cocoons giving unmistakable lustre and a fluid drape.',Cotton:'Sourced from certified Maharashtra farms. 100% natural, breathable, skin-friendly. Machine-washable and gets softer with every wash.',Wool:'Merino wool from Himachal Pradesh. Naturally temperature-regulating — warm in winter, breathable in mild weather. Dry clean recommended.',Polyester:'High-grade microfibre with a natural feel. Wrinkle-resistant, easy maintenance, colourfast after repeated washes.',Linen:'Premium linen — one of the most sustainable natural fibres. Gets softer over time. Breathable and perfect for Indian summers.',Denim:'Ring-spun denim from our Ahmedabad mill. 12oz weight for structure, pre-washed for an instant broken-in feel.',Rayon:'Viscose rayon with a silk-like drape. Lightweight, fluid, excellent colour retention. Ideal for festive or layered looks.'};
+const designerBio={'Anita Dongre':'Nature-inspired designs. Dressed royalty and Bollywood icons. Champion of Indian artisan crafts.','Manish Malhotra':'India\'s most celebrated couturier. Defines modern Indian glamour.','Ritu Kumar':'Pioneer of Indian fashion who revived traditional crafts. Stocked in 40+ stores globally.'};
+
+const urlParams=new URLSearchParams(location.search);
+const clothId=urlParams.get('id');
+
+async function loadProduct(){
+  if(!clothId){showErr('No product ID. <a href="catalog.html">Go back</a>');return;}
+  try{
+    const p=await fetch(`${API}/clothes/${clothId}`).then(r=>r.json());
+    if(p.error)throw new Error(p.error);
+    render(p);loadOptions(p.type,p.cloth_id);loadRelated(p.type,p.cloth_id);
+  }catch{
+    const d={cloth_id:7,type:'Suit',fabric:'Wool',colour:'Grey',size:'XL',price:8500,mfd:'2024-02-10T00:00:00.000Z',status:'In-Stock',designer_name:'Manish Malhotra',branch_name:'Main Street Branch'};
+    render(d);loadOptions(d.type,d.cloth_id);loadRelated(d.type,d.cloth_id);
+  }
+}
+
+function render(p){
+  const imgs=getImgs(p.type);
+  const mfdStr=p.mfd?new Date(p.mfd).toLocaleDateString('en-IN',{month:'long',year:'numeric'}):'—';
+  const hex=colourHex[p.colour]||'#888';
+  document.getElementById('bcProduct').textContent=p.type;
+  document.title=`${p.type} — VELOUR`;
+  window._product=p;window._imgs=imgs;
+
+  document.getElementById('mainContent').innerHTML=`
+  <div class="product-page">
+    <div class="img-col">
+      <div class="main-img">
+        <img id="mainImg" src="${imgs[0]}" alt="${p.type}">
+        <span class="ribbon ${p.status==='In-Stock'?'ribbon-stock':'ribbon-sold'}">${p.status}</span>
+      </div>
+      ${imgs.length>1?`<div class="thumbs">${imgs.map((s,i)=>`<div class="thumb ${i===0?'on':''}" onclick="switchImg(this,'${s}')"><img src="${s}" alt="view ${i+1}" loading="lazy"></div>`).join('')}</div>`:''}
+    </div>
+
+    <div class="details-col">
+      <div class="type-tag">${p.fabric} &nbsp;·&nbsp; Size ${p.size}</div>
+      <h1 class="prod-name">${p.type}</h1>
+      <div class="colour-chip">
+        <span class="colour-dot" style="background:${hex};"></span>
+        ${p.colour}
+      </div>
+      <div class="prod-price">₹ ${Number(p.price).toLocaleString('en-IN')}</div>
+      <div class="prod-price-note">Inclusive of all taxes · Free in-store pickup</div>
+
+      <table class="specs">
+        <tr><td>Fabric</td><td>${p.fabric}</td></tr>
+        <tr><td>Colour</td><td>${p.colour}</td></tr>
+        <tr><td>Size</td><td>${p.size}</td></tr>
+        <tr><td>Availability</td><td class="${p.status==='In-Stock'?'s-stock':'s-sold'}">${p.status}</td></tr>
+        <tr><td>Manufactured</td><td>${mfdStr}</td></tr>
+        <tr><td>Branch</td><td>${p.branch_name||'Main Street Branch'}</td></tr>
+        ${p.designer_name?`<tr><td>Designer</td><td>${p.designer_name}</td></tr>`:''}
+      </table>
+
+      ${p.status==='In-Stock'?`
+      <div class="qty-row">
+        <div class="qty-wrap">
+          <button class="q-btn" onclick="setQty(qty-1)">−</button>
+          <div class="q-num" id="qtyNum">1</div>
+          <button class="q-btn" onclick="setQty(qty+1)">+</button>
+        </div>
+        <button class="btn-cart" onclick="addToCart()">Add to Cart</button>
+      </div>`:`<button class="btn-cart" disabled style="width:100%;margin-bottom:.75rem;">Out of Stock</button>`}
+
+      <a href="catalog.html" class="btn-continue">← Continue Shopping</a>
+      <div class="cart-msg" id="cartMsg"></div>
+
+      <div class="fabric-blurb">
+        <div class="fabric-blurb-title">About ${p.fabric}</div>
+        <div class="fabric-blurb-text">${fabricText[p.fabric]||'Premium quality fabric chosen for durability and comfort.'}</div>
+      </div>
+
+      <div class="care">
+        <div class="care-item"><span>🫧</span>Cold Wash</div>
+        <div class="care-item"><span>🚫</span>No Bleach</div>
+        <div class="care-item"><span>🌬️</span>Air Dry</div>
+        <div class="care-item"><span>♨️</span>Low Iron</div>
+        ${p.fabric==='Silk'||p.fabric==='Wool'?'<div class="care-item"><span>👔</span>Dry Clean</div>':''}
+      </div>
+
+      ${p.designer_name?`
+      <div class="designer-row">
+        <div class="d-ava">✦</div>
+        <div>
+          <div class="d-label">Designed by</div>
+          <div class="d-name">${p.designer_name}</div>
+          <div class="d-bio">${designerBio[p.designer_name]||''}</div>
+        </div>
+      </div>`:''}
+    </div>
+
+    <div class="options-col">
+      <div class="options-header">
+        <span class="options-title">More ${p.type}s</span>
+        <span class="options-count" id="optCount"></span>
+      </div>
+      <div class="options-scroll" id="optionsList">
+        <div class="options-empty">Loading…</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="related-section">
+    <div class="related-label">You May Also Like</div>
+    <div class="related-title">Other Styles</div>
+    <div class="related-grid" id="relatedGrid">
+      <div style="grid-column:1/-1;text-align:center;color:var(--muted);padding:2rem;">Loading…</div>
+    </div>
+  </div>`;
+}
+
+window.switchImg=function(el,src){
+  const mi=document.getElementById('mainImg');
+  mi.classList.add('fading');
+  setTimeout(()=>{mi.src=src;mi.classList.remove('fading');},250);
+  document.querySelectorAll('.thumb').forEach(t=>t.classList.remove('on'));
+  el.classList.add('on');
+};
+
+window.setQty=function(n){qty=Math.max(1,Math.min(10,n));document.getElementById('qtyNum').textContent=qty;};
+
+window.addToCart=function(){
+  const p=window._product;
+  const msg=document.getElementById('cartMsg');
+  let cart=JSON.parse(localStorage.getItem('velour_cart')||'[]');
+  const img=window._imgs[0];
+  const existing=cart.find(i=>i.cloth_id===p.cloth_id);
+  if(existing){
+    existing.quantity=Math.min(10,(existing.quantity||1)+qty);
+    msg.textContent=`Updated — ${existing.quantity}x in cart.`;msg.style.color='var(--gold)';
+  }else{
+    cart.push({cloth_id:p.cloth_id,type:p.type,fabric:p.fabric,colour:p.colour,size:p.size,price:p.price,img,quantity:qty});
+    msg.innerHTML='✓ Added! <a href="catalog.html" style="color:var(--gold);text-decoration:underline;">View Cart →</a>';
+    msg.style.color='#4CAF50';
+  }
+  localStorage.setItem('velour_cart',JSON.stringify(cart));
+};
+
+async function loadOptions(type,excludeId){
+  try{
+    const data=await fetch(`${API}/clothes?status=In-Stock&type=${type}`).then(r=>r.json());
+    const others=data.filter(c=>c.cloth_id!=excludeId);
+    const imgs=getImgs(type);
+    document.getElementById('optCount').textContent=others.length?`${others.length} available`:'';
+    if(!others.length){
+      document.getElementById('optionsList').innerHTML=`<div class="options-empty">No other ${type}s in stock right now.<br><a href="catalog.html" style="color:var(--gold);">Browse all →</a></div>`;
+      return;
+    }
+    document.getElementById('optionsList').innerHTML=others.map((c,i)=>{
+      const img=imgs[i%imgs.length];
+      const hex=colourHex[c.colour]||'#888';
+      return `
+      <div class="option-card" onclick="location.href='product.html?id=${c.cloth_id}'">
+        <div class="option-thumb"><img src="${img}" alt="${c.type}" loading="lazy"></div>
+        <div class="option-info">
+          <div class="option-fabric">${c.fabric}</div>
+          <div class="option-name">
+            <span style="width:9px;height:9px;border-radius:50%;background:${hex};flex-shrink:0;border:1px solid rgba(0,0,0,.1);display:inline-block;"></span>
+            ${c.colour}
+          </div>
+          <div class="option-price">₹ ${Number(c.price).toLocaleString('en-IN')}</div>
+        </div>
+        <div class="option-size">${c.size}</div>
+      </div>`;
+    }).join('');
+  }catch{
+    document.getElementById('optionsList').innerHTML=`<div class="options-empty">Options unavailable.</div>`;
+  }
+}
+
+async function loadRelated(type,excludeId){
+  try{
+    const data=await fetch(`${API}/clothes?status=In-Stock`).then(r=>r.json());
+    const rel=data.filter(c=>c.cloth_id!=excludeId&&c.type!==type).slice(0,4);
+    if(!rel.length)throw new Error('empty');
+    document.getElementById('relatedGrid').innerHTML=rel.map(c=>{
+      const img=getImgs(c.type)[0];
+      return `<div class="rel-card" onclick="location.href='product.html?id=${c.cloth_id}'"><img src="${img}" alt="${c.type}" loading="lazy"><div class="rel-info"><div class="rel-name">${c.type}</div><div class="rel-price">₹ ${Number(c.price).toLocaleString('en-IN')} · ${c.size}</div></div></div>`;
+    }).join('');
+  }catch{
+    document.getElementById('relatedGrid').innerHTML='<div style="grid-column:1/-1;text-align:center;color:var(--muted);padding:2rem;">No related items available.</div>';
+  }
+}
+
+function showErr(msg){document.getElementById('mainContent').innerHTML=`<div class="loading-wrap"><div style="font-size:2.5rem">⚠️</div><div style="color:var(--muted);">${msg}</div></div>`;}
+
+loadProduct();
+</script>
+</body>
+</html>

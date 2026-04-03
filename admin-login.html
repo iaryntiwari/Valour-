@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Admin Login — VELOUR</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0A0806; --surface:#141210; --surface2:#1E1A16;
+  --gold:#C9A96E; --cream:#F5F0E8; --muted:#6B6258;
+  --red:#E57373; --green:#81C784; --border:rgba(201,169,110,.12);
+}
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
+html,body{height:100%;}
+body{background:var(--bg);color:var(--cream);font-family:'DM Sans',sans-serif;display:flex;align-items:center;justify-content:center;min-height:100vh;position:relative;overflow:hidden;}
+
+/* ── ANIMATED BG ── */
+.bg-grid{position:fixed;inset:0;background-image:linear-gradient(rgba(201,169,110,.03) 1px,transparent 1px),linear-gradient(90deg,rgba(201,169,110,.03) 1px,transparent 1px);background-size:60px 60px;animation:gridShift 20s linear infinite;}
+@keyframes gridShift{to{background-position:60px 60px;}}
+.bg-glow{position:fixed;width:600px;height:600px;background:radial-gradient(circle,rgba(201,169,110,.08) 0%,transparent 70%);top:50%;left:50%;transform:translate(-50%,-50%);animation:glowPulse 4s ease-in-out infinite;}
+@keyframes glowPulse{0%,100%{opacity:.5;transform:translate(-50%,-50%) scale(1);}50%{opacity:1;transform:translate(-50%,-50%) scale(1.1);}}
+.bg-line{position:fixed;top:0;left:50%;width:1px;height:100%;background:linear-gradient(transparent,rgba(201,169,110,.15),transparent);transform:translateX(-50%);}
+
+/* ── CARD ── */
+.login-card{position:relative;z-index:10;width:420px;background:var(--surface);border:1px solid var(--border);padding:3.5rem;animation:cardEnter .8s cubic-bezier(.4,0,.2,1) forwards;}
+@keyframes cardEnter{from{opacity:0;transform:translateY(30px);}to{opacity:1;transform:translateY(0);}}
+
+.login-logo{font-family:'Cormorant Garamond',serif;font-size:2.5rem;font-weight:300;letter-spacing:.3em;color:var(--cream);text-align:center;margin-bottom:.5rem;}
+.login-logo span{color:var(--gold);}
+.login-sub{text-align:center;font-size:.7rem;letter-spacing:.25em;text-transform:uppercase;color:var(--muted);margin-bottom:3rem;}
+
+.login-divider{display:flex;align-items:center;gap:1rem;margin-bottom:2.5rem;}
+.login-divider::before,.login-divider::after{content:'';flex:1;height:1px;background:var(--border);}
+.login-divider span{font-size:.65rem;letter-spacing:.2em;text-transform:uppercase;color:var(--muted);}
+
+.form-group{margin-bottom:1.5rem;}
+.form-label{display:block;font-size:.65rem;letter-spacing:.2em;text-transform:uppercase;color:var(--muted);margin-bottom:.6rem;}
+.form-input{width:100%;padding:.9rem 1.1rem;background:var(--surface2);border:1px solid var(--border);color:var(--cream);font-family:'DM Sans',sans-serif;font-size:.9rem;outline:none;transition:border-color .3s,background .3s;}
+.form-input:focus{border-color:var(--gold);background:rgba(201,169,110,.04);}
+.form-input::placeholder{color:var(--muted);}
+
+/* Password visibility toggle */
+.pw-wrap{position:relative;}
+.pw-toggle{position:absolute;right:.9rem;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;color:var(--muted);font-size:.9rem;transition:color .2s;}
+.pw-toggle:hover{color:var(--gold);}
+
+.login-btn{width:100%;background:var(--gold);color:var(--bg);border:none;padding:1.1rem;font-family:'DM Sans',sans-serif;font-size:.82rem;letter-spacing:.2em;text-transform:uppercase;cursor:pointer;font-weight:500;transition:all .3s;margin-top:.5rem;position:relative;overflow:hidden;}
+.login-btn::after{content:'';position:absolute;inset:0;background:rgba(255,255,255,0);transition:background .3s;}
+.login-btn:hover::after{background:rgba(255,255,255,.1);}
+.login-btn:active{transform:scale(.98);}
+.login-btn.loading{opacity:.7;pointer-events:none;}
+
+.login-error{margin-top:1rem;padding:.9rem 1rem;background:rgba(229,115,115,.1);border:1px solid rgba(229,115,115,.2);color:var(--red);font-size:.82rem;text-align:center;display:none;}
+.login-error.show{display:block;animation:shake .4s ease;}
+@keyframes shake{0%,100%{transform:translateX(0);}25%{transform:translateX(-6px);}75%{transform:translateX(6px);}}
+
+.login-hint{margin-top:2rem;padding:1rem;background:rgba(201,169,110,.06);border:1px solid var(--border);text-align:center;}
+.hint-title{font-size:.65rem;letter-spacing:.18em;text-transform:uppercase;color:var(--gold);margin-bottom:.5rem;}
+.hint-creds{font-size:.78rem;color:var(--muted);line-height:1.6;}
+.hint-creds strong{color:rgba(245,240,232,.7);}
+
+.back-link{display:block;text-align:center;margin-top:1.5rem;color:var(--muted);font-size:.75rem;letter-spacing:.12em;text-transform:uppercase;text-decoration:none;transition:color .2s;}
+.back-link:hover{color:var(--gold);}
+
+/* ── SECURITY BADGE ── */
+.sec-badge{position:absolute;top:-3rem;left:50%;transform:translateX(-50%);display:flex;align-items:center;gap:.5rem;font-size:.68rem;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);}
+.sec-dot{width:6px;height:6px;background:var(--green);border-radius:50%;animation:blink 2s ease-in-out infinite;}
+@keyframes blink{0%,100%{opacity:1;}50%{opacity:.3;}}
+</style>
+</head>
+<body>
+
+<div class="bg-grid"></div>
+<div class="bg-glow"></div>
+<div class="bg-line"></div>
+
+<div class="login-card">
+  <div class="sec-badge"><span class="sec-dot"></span>Secure Admin Access</div>
+
+  <div class="login-logo">VEL<span>O</span>UR</div>
+  <div class="login-sub">Owner / Admin Portal</div>
+
+  <div class="login-divider"><span>Sign In</span></div>
+
+  <div class="form-group">
+    <label class="form-label">Username</label>
+    <input class="form-input" id="username" type="text" placeholder="Enter admin username" autocomplete="username">
+  </div>
+
+  <div class="form-group">
+    <label class="form-label">Password</label>
+    <div class="pw-wrap">
+      <input class="form-input" id="password" type="password" placeholder="Enter password" autocomplete="current-password">
+      <button class="pw-toggle" type="button" onclick="togglePW()" id="eyeBtn">👁</button>
+    </div>
+  </div>
+
+  <button class="login-btn" id="loginBtn" onclick="doLogin()">Access Dashboard</button>
+  <div class="login-error" id="loginError">❌ Invalid credentials. Please try again.</div>
+
+  <!-- Hint for college project / demo -->
+  <div class="login-hint">
+    <div class="hint-title">Demo Credentials</div>
+    <div class="hint-creds">
+      Username: <strong>admin</strong><br>
+      Password: <strong>velour2024</strong>
+    </div>
+  </div>
+
+  <a href="index.html" class="back-link">← Return to Store</a>
+</div>
+
+<script>
+// Check if already logged in
+if (sessionStorage.getItem('velour_admin') === 'true') {
+  location.href = 'admin.html';
+}
+
+// Hardcoded credentials (for college DBMS project)
+const ADMIN_USER = 'admin';
+const ADMIN_PASS = 'velour2024';
+
+function togglePW() {
+  const inp = document.getElementById('password');
+  const btn = document.getElementById('eyeBtn');
+  if (inp.type === 'password') { inp.type = 'text'; btn.textContent = '🙈'; }
+  else { inp.type = 'password'; btn.textContent = '👁'; }
+}
+
+function doLogin() {
+  const user = document.getElementById('username').value.trim();
+  const pass = document.getElementById('password').value;
+  const btn  = document.getElementById('loginBtn');
+  const err  = document.getElementById('loginError');
+
+  btn.textContent = 'Verifying…';
+  btn.classList.add('loading');
+  err.classList.remove('show');
+
+  setTimeout(() => {
+    if (user === ADMIN_USER && pass === ADMIN_PASS) {
+      sessionStorage.setItem('velour_admin', 'true');
+      btn.textContent = '✓ Access Granted';
+      btn.style.background = '#81C784';
+      setTimeout(() => location.href = 'admin.html', 600);
+    } else {
+      btn.textContent = 'Access Dashboard';
+      btn.classList.remove('loading');
+      err.classList.add('show');
+      document.getElementById('password').value = '';
+      document.getElementById('password').focus();
+    }
+  }, 800);
+}
+
+// Enter key support
+document.addEventListener('keydown', e => { if (e.key === 'Enter') doLogin(); });
+</script>
+</body>
+</html>

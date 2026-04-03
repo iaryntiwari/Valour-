@@ -1,0 +1,637 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Shop Catalog — VELOUR</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<link href="https://unpkg.com/aos@2.3.4/dist/aos.css" rel="stylesheet">
+<style>
+:root{--cream:#F5F0E8;--ink:#1A1612;--gold:#C9A96E;--rust:#B85C38;--muted:#8A7F74;--card:#FDFAF5;--dark:#0E0C0A;}
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{background:var(--cream);color:var(--ink);font-family:'DM Sans',sans-serif;overflow-x:hidden;}
+
+/* NAV */
+nav{position:fixed;top:0;left:0;right:0;z-index:500;display:flex;align-items:center;justify-content:space-between;padding:1.3rem 4rem;backdrop-filter:blur(16px);background:rgba(245,240,232,.92);border-bottom:1px solid rgba(201,169,110,.18);}
+.nav-logo{font-family:'Cormorant Garamond',serif;font-size:1.8rem;font-weight:300;letter-spacing:.3em;color:var(--ink);text-decoration:none;}
+.nav-logo span{color:var(--gold);}
+.nav-right{display:flex;align-items:center;gap:2rem;}
+.nav-links{display:flex;gap:2rem;list-style:none;}
+.nav-links a{text-decoration:none;color:var(--muted);font-size:.75rem;letter-spacing:.15em;text-transform:uppercase;transition:color .3s;}
+.nav-links a:hover{color:var(--ink);}
+.cart-btn{position:relative;background:var(--ink);color:var(--cream);border:none;padding:.65rem 1.5rem;font-family:'DM Sans',sans-serif;font-size:.75rem;letter-spacing:.1em;text-transform:uppercase;cursor:pointer;transition:all .3s;display:flex;align-items:center;gap:.5rem;}
+.cart-btn:hover{background:var(--gold);}
+.cart-count{background:var(--gold);color:var(--ink);border-radius:50%;width:1.15rem;height:1.15rem;font-size:.62rem;display:flex;align-items:center;justify-content:center;font-weight:700;}
+
+/* PAGE HEADER */
+.page-header{background:var(--dark);padding:8rem 6rem 4rem;position:relative;overflow:hidden;}
+.page-header-bg{position:absolute;inset:0;background-image:repeating-linear-gradient(45deg,rgba(201,169,110,.02) 0,rgba(201,169,110,.02) 1px,transparent 0,transparent 50%);background-size:30px 30px;animation:bgShift 15s linear infinite;}
+@keyframes bgShift{to{background-position:30px 30px;}}
+.page-header-content{position:relative;z-index:2;}
+.page-label{font-size:.68rem;letter-spacing:.28em;text-transform:uppercase;color:var(--gold);margin-bottom:1rem;display:flex;align-items:center;gap:.8rem;}
+.page-label::before{content:'';width:2rem;height:1px;background:var(--gold);}
+.page-title{font-family:'Cormorant Garamond',serif;font-size:clamp(3rem,5vw,5rem);font-weight:300;color:var(--cream);}
+.page-sub{color:rgba(245,240,232,.4);margin-top:.5rem;font-size:.9rem;}
+.results-row{display:flex;align-items:center;justify-content:space-between;margin-top:2rem;flex-wrap:wrap;gap:1rem;}
+.results-count{font-size:.82rem;color:rgba(245,240,232,.4);}
+.active-filters{display:flex;gap:.5rem;flex-wrap:wrap;}
+.filter-tag{background:rgba(201,169,110,.2);border:1px solid rgba(201,169,110,.3);color:var(--gold);font-size:.65rem;letter-spacing:.12em;text-transform:uppercase;padding:.3rem .75rem;display:flex;align-items:center;gap:.4rem;cursor:pointer;}
+.filter-tag-x{opacity:.7;}
+.filter-tag-x:hover{opacity:1;}
+
+/* LAYOUT */
+.catalog-wrap{display:grid;grid-template-columns:260px 1fr;gap:0;align-items:start;min-height:70vh;}
+
+/* SIDEBAR */
+.sidebar{position:sticky;top:5rem;background:var(--card);border-right:1px solid rgba(201,169,110,.1);padding:2.5rem 2rem;min-height:calc(100vh - 5rem);}
+.filter-head{font-family:'Cormorant Garamond',serif;font-size:1.4rem;font-weight:300;margin-bottom:2rem;padding-bottom:1rem;border-bottom:1px solid rgba(201,169,110,.15);}
+.filter-group{margin-bottom:2rem;}
+.filter-group-label{font-size:.65rem;letter-spacing:.22em;text-transform:uppercase;color:var(--gold);margin-bottom:1rem;display:flex;align-items:center;justify-content:space-between;}
+.filter-opts{display:flex;flex-direction:column;gap:.3rem;}
+.filter-opt{display:flex;align-items:center;gap:.6rem;padding:.45rem .3rem;cursor:pointer;border-radius:2px;transition:background .2s;}
+.filter-opt:hover{background:rgba(201,169,110,.06);}
+.filter-opt input[type="radio"]{accent-color:var(--gold);width:.9rem;height:.9rem;cursor:pointer;}
+.filter-opt span{font-size:.85rem;color:var(--ink);}
+.filter-opt input:checked+span{color:var(--gold);font-weight:500;}
+
+/* SIZE CHIPS */
+.size-chips{display:flex;flex-wrap:wrap;gap:.4rem;}
+.size-chip{width:42px;height:42px;display:flex;align-items:center;justify-content:center;border:1px solid rgba(201,169,110,.2);font-size:.78rem;cursor:pointer;transition:all .2s;color:var(--ink);}
+.size-chip:hover{border-color:var(--gold);}
+.size-chip.selected{background:var(--ink);color:var(--cream);border-color:var(--ink);}
+
+/* PRICE RANGE */
+.price-inputs{display:grid;grid-template-columns:1fr 1fr;gap:.75rem;margin-top:.5rem;}
+.price-input{width:100%;padding:.6rem .75rem;border:1px solid rgba(201,169,110,.2);background:var(--cream);font-family:'DM Sans',sans-serif;font-size:.82rem;color:var(--ink);outline:none;}
+.price-input:focus{border-color:var(--gold);}
+
+.apply-btn{width:100%;background:var(--ink);color:var(--cream);border:none;padding:.85rem;font-family:'DM Sans',sans-serif;font-size:.75rem;letter-spacing:.15em;text-transform:uppercase;cursor:pointer;transition:background .3s;margin-top:.5rem;}
+.apply-btn:hover{background:var(--gold);}
+.reset-btn{width:100%;background:none;color:var(--muted);border:1px solid rgba(201,169,110,.2);padding:.7rem;font-family:'DM Sans',sans-serif;font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;cursor:pointer;margin-top:.5rem;transition:all .3s;}
+.reset-btn:hover{color:var(--ink);border-color:var(--ink);}
+
+/* PRODUCTS AREA */
+.products-area{padding:2rem 3rem;}
+.products-toolbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:2rem;flex-wrap:wrap;gap:1rem;}
+.products-toolbar-count{font-size:.82rem;color:var(--muted);}
+.view-toggle{display:flex;gap:.3rem;}
+.view-btn{width:36px;height:36px;border:1px solid rgba(201,169,110,.2);background:none;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:.9rem;transition:all .2s;}
+.view-btn.active{background:var(--ink);color:var(--cream);border-color:var(--ink);}
+.sort-select{border:1px solid rgba(201,169,110,.2);background:var(--card);padding:.5rem 1rem;font-family:'DM Sans',sans-serif;font-size:.78rem;color:var(--ink);outline:none;cursor:pointer;}
+
+/* PRODUCT GRID */
+.products-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:1.5rem;}
+.products-grid.list-view{grid-template-columns:1fr;}
+
+/* PRODUCT CARD */
+.prod-card{background:var(--card);border:1px solid rgba(201,169,110,.08);overflow:hidden;transition:all .35s;cursor:pointer;}
+.prod-card:hover{transform:translateY(-5px);box-shadow:0 20px 50px rgba(0,0,0,.1);border-color:rgba(201,169,110,.3);}
+.prod-card-img{position:relative;overflow:hidden;height:300px;}
+.prod-card-img img{width:100%;height:100%;object-fit:cover;transition:transform .6s ease;}
+.prod-card:hover .prod-card-img img{transform:scale(1.07);}
+.prod-card-overlay{position:absolute;inset:0;background:rgba(26,22,18,0);transition:background .3s;display:flex;align-items:center;justify-content:center;gap:.75rem;}
+.prod-card:hover .prod-card-overlay{background:rgba(26,22,18,.4);}
+.overlay-btn{background:var(--cream);color:var(--ink);border:none;padding:.6rem 1.1rem;font-family:'DM Sans',sans-serif;font-size:.7rem;letter-spacing:.1em;text-transform:uppercase;cursor:pointer;transition:all .3s;opacity:0;transform:translateY(10px);}
+.prod-card:hover .overlay-btn{opacity:1;transform:none;}
+.overlay-btn:hover{background:var(--gold);}
+.overlay-btn.preview{background:transparent;border:1px solid rgba(245,240,232,.7);color:var(--cream);}
+.overlay-btn.preview:hover{background:var(--cream);color:var(--ink);}
+
+.prod-badge{position:absolute;top:.8rem;left:.8rem;font-size:.6rem;letter-spacing:.1em;text-transform:uppercase;padding:.28rem .65rem;font-weight:600;z-index:3;}
+.badge-instock{background:rgba(76,175,80,.9);color:#fff;}
+.badge-sold{background:rgba(183,83,44,.9);color:#fff;}
+.badge-designer{position:absolute;top:.8rem;right:.8rem;background:rgba(201,169,110,.95);color:var(--ink);font-size:.58rem;letter-spacing:.1em;text-transform:uppercase;padding:.28rem .65rem;}
+
+.prod-card-info{padding:1.2rem 1.3rem;}
+.prod-card-fabric{font-size:.65rem;letter-spacing:.18em;text-transform:uppercase;color:var(--muted);margin-bottom:.3rem;}
+.prod-card-name{font-family:'Cormorant Garamond',serif;font-size:1.2rem;font-weight:300;margin-bottom:.5rem;}
+.prod-card-footer{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:.5rem;}
+.prod-card-price{font-size:1.05rem;font-weight:500;}
+.prod-card-size{font-size:.65rem;background:rgba(201,169,110,.12);color:var(--gold);padding:.2rem .55rem;letter-spacing:.08em;}
+.prod-card-designer{font-size:.68rem;color:var(--muted);margin-top:.4rem;}
+
+/* LIST VIEW */
+.prod-card.list-card{display:grid;grid-template-columns:200px 1fr;gap:0;}
+.prod-card.list-card .prod-card-img{height:auto;min-height:160px;}
+.prod-card.list-card .prod-card-info{display:flex;flex-direction:column;justify-content:center;padding:1.5rem 2rem;}
+
+/* EMPTY / LOADING */
+.grid-state{grid-column:1/-1;text-align:center;padding:5rem 2rem;}
+.grid-state-icon{font-size:3rem;margin-bottom:1.2rem;}
+.grid-state-msg{font-family:'Cormorant Garamond',serif;font-size:1.8rem;font-weight:300;color:var(--muted);}
+.grid-state-sub{font-size:.85rem;color:var(--muted);margin-top:.6rem;}
+
+/* CART PANEL */
+.cart-overlay{position:fixed;inset:0;background:rgba(26,22,18,.55);z-index:600;opacity:0;pointer-events:none;transition:opacity .35s;}
+.cart-overlay.open{opacity:1;pointer-events:all;}
+.cart-panel{position:fixed;top:0;right:0;bottom:0;width:410px;background:var(--card);z-index:601;transform:translateX(100%);transition:transform .4s cubic-bezier(.4,0,.2,1);display:flex;flex-direction:column;box-shadow:-20px 0 60px rgba(0,0,0,.15);}
+.cart-panel.open{transform:none;}
+.cart-header{padding:1.8rem 2rem;border-bottom:1px solid rgba(201,169,110,.15);display:flex;align-items:center;justify-content:space-between;}
+.cart-header h2{font-family:'Cormorant Garamond',serif;font-size:1.7rem;font-weight:300;}
+.cart-close{background:none;border:none;font-size:1.2rem;cursor:pointer;color:var(--muted);width:32px;height:32px;display:flex;align-items:center;justify-content:center;transition:color .2s;}
+.cart-close:hover{color:var(--ink);}
+.cart-items{flex:1;overflow-y:auto;padding:1.5rem;}
+.cart-item{display:flex;gap:1rem;padding:1rem 0;border-bottom:1px solid rgba(201,169,110,.08);}
+.cart-item:last-child{border-bottom:none;}
+.cart-item-img{width:70px;height:80px;object-fit:cover;flex-shrink:0;}
+.cart-item-info{flex:1;}
+.cart-item-name{font-family:'Cormorant Garamond',serif;font-size:1.05rem;font-weight:300;}
+.cart-item-detail{font-size:.72rem;color:var(--muted);margin-top:.2rem;}
+.cart-item-price{font-size:.9rem;font-weight:500;margin-top:.4rem;}
+.cart-item-remove{background:none;border:none;color:var(--muted);cursor:pointer;font-size:.68rem;letter-spacing:.1em;text-transform:uppercase;margin-top:.4rem;padding:0;transition:color .2s;}
+.cart-item-remove:hover{color:var(--rust);}
+.cart-empty{text-align:center;padding:4rem 2rem;color:var(--muted);}
+.cart-empty-icon{font-size:3rem;margin-bottom:1rem;}
+.cart-footer{padding:1.5rem 2rem;border-top:1px solid rgba(201,169,110,.15);}
+.cart-total-row{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:1.2rem;}
+.cart-total-row span:first-child{font-size:.72rem;letter-spacing:.15em;text-transform:uppercase;color:var(--muted);}
+.cart-total-row span:last-child{font-family:'Cormorant Garamond',serif;font-size:1.7rem;}
+.checkout-btn{width:100%;background:var(--ink);color:var(--cream);border:none;padding:1rem;font-family:'DM Sans',sans-serif;font-size:.8rem;letter-spacing:.18em;text-transform:uppercase;cursor:pointer;transition:background .3s;}
+.checkout-btn:hover{background:var(--gold);}
+
+/* CHECKOUT MODAL */
+.modal-backdrop{position:fixed;inset:0;background:rgba(26,22,18,.7);z-index:700;display:none;align-items:center;justify-content:center;padding:2rem;}
+.modal-backdrop.open{display:flex;}
+.modal-box{background:var(--card);width:90%;max-width:500px;max-height:90vh;overflow-y:auto;}
+.modal-hd{padding:1.8rem 2rem;border-bottom:1px solid rgba(201,169,110,.15);display:flex;justify-content:space-between;align-items:center;}
+.modal-hd h2{font-family:'Cormorant Garamond',serif;font-size:1.7rem;font-weight:300;}
+.modal-bd{padding:2rem;}
+.modal-input{width:100%;padding:.85rem 1rem;border:1px solid rgba(201,169,110,.25);background:var(--cream);font-family:'DM Sans',sans-serif;font-size:.88rem;color:var(--ink);outline:none;margin-bottom:1rem;transition:border-color .3s;}
+.modal-input:focus{border-color:var(--gold);}
+.modal-label{display:block;font-size:.65rem;letter-spacing:.18em;text-transform:uppercase;color:var(--muted);margin-bottom:.5rem;}
+.order-summary-box{background:rgba(201,169,110,.05);border:1px solid rgba(201,169,110,.15);padding:1.5rem;margin-bottom:1.5rem;}
+.order-summary-title{font-size:.65rem;letter-spacing:.2em;text-transform:uppercase;color:var(--gold);margin-bottom:1rem;}
+.order-row{display:flex;justify-content:space-between;font-size:.85rem;padding:.35rem 0;}
+.order-total-row{border-top:1px solid rgba(201,169,110,.2);margin-top:.5rem;padding-top:.8rem;display:flex;justify-content:space-between;font-family:'Cormorant Garamond',serif;font-size:1.4rem;}
+.place-order-btn{width:100%;background:var(--ink);color:var(--cream);border:none;padding:1rem;font-family:'DM Sans',sans-serif;font-size:.8rem;letter-spacing:.18em;text-transform:uppercase;cursor:pointer;transition:background .3s;}
+.place-order-btn:hover{background:var(--gold);}
+.modal-note{font-size:.72rem;color:var(--muted);margin-bottom:1.2rem;padding:.7rem;background:rgba(201,169,110,.05);border-left:2px solid var(--gold);}
+.order-msg{text-align:center;min-height:1.2rem;font-size:.82rem;margin-top:.75rem;}
+
+/* SUCCESS */
+.success-wrap{text-align:center;padding:3rem;}
+.success-icon{font-size:4rem;margin-bottom:1.5rem;}
+.success-title{font-family:'Cormorant Garamond',serif;font-size:2.2rem;font-weight:300;}
+.success-msg{color:var(--muted);font-size:.88rem;line-height:1.7;margin-top:.75rem;}
+.success-cta{margin-top:2rem;background:var(--ink);color:var(--cream);border:none;padding:.9rem 2rem;font-family:'DM Sans',sans-serif;font-size:.78rem;letter-spacing:.15em;text-transform:uppercase;cursor:pointer;transition:background .3s;}
+.success-cta:hover{background:var(--gold);}
+
+@media(max-width:1000px){
+  nav{padding:1rem 1.5rem;}
+  .nav-links{display:none;}
+  .page-header{padding:6rem 2rem 3rem;}
+  .catalog-wrap{grid-template-columns:1fr;}
+  .sidebar{display:none;}
+  .products-area{padding:1.5rem;}
+  .products-grid{grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:1rem;}
+  .prod-card-img{height:230px;}
+  .cart-panel{width:100%;}
+}
+</style>
+</head>
+<body>
+
+<nav>
+  <a href="index.html" class="nav-logo">VEL<span>O</span>UR</a>
+  <div class="nav-right">
+    <ul class="nav-links">
+      <li><a href="index.html">Home</a></li>
+      <li><a href="collections.html">Collections</a></li>
+      <li><a href="index.html#support">Support</a></li>
+    </ul>
+    <button class="cart-btn" onclick="toggleCart()">
+      🛍 Cart <span class="cart-count" id="cartCount">0</span>
+    </button>
+  </div>
+</nav>
+
+<!-- PAGE HEADER -->
+<div class="page-header">
+  <div class="page-header-bg"></div>
+  <div class="page-header-content">
+    <p class="page-label">Our Collection</p>
+    <h1 class="page-title">Shop Catalog</h1>
+    <p class="page-sub">Browse all garments — filtered by your preference</p>
+  </div>
+</div>
+
+<!-- CATALOG LAYOUT -->
+<div class="catalog-wrap">
+  <!-- SIDEBAR FILTERS -->
+  <aside class="sidebar">
+    <div class="filter-head">Filters</div>
+
+    <div class="filter-group">
+      <div class="filter-group-label">Garment Type</div>
+      <div class="filter-opts">
+        <label class="filter-opt"><input type="radio" name="type" value=""> <span>All Types</span></label>
+        <label class="filter-opt"><input type="radio" name="type" value="Shirt"> <span>Shirts</span></label>
+        <label class="filter-opt"><input type="radio" name="type" value="Pant"> <span>Pants</span></label>
+        <label class="filter-opt"><input type="radio" name="type" value="Dress"> <span>Dresses</span></label>
+        <label class="filter-opt"><input type="radio" name="type" value="Saree"> <span>Sarees</span></label>
+        <label class="filter-opt"><input type="radio" name="type" value="Kurta"> <span>Kurtas</span></label>
+        <label class="filter-opt"><input type="radio" name="type" value="Jacket"> <span>Jackets</span></label>
+        <label class="filter-opt"><input type="radio" name="type" value="Skirt"> <span>Skirts</span></label>
+        <label class="filter-opt"><input type="radio" name="type" value="Suit"> <span>Suits</span></label>
+      </div>
+    </div>
+
+    <div class="filter-group">
+      <div class="filter-group-label">Fabric</div>
+      <div class="filter-opts">
+        <label class="filter-opt"><input type="radio" name="fabric" value=""> <span>All Fabrics</span></label>
+        <label class="filter-opt"><input type="radio" name="fabric" value="Cotton"> <span>Cotton</span></label>
+        <label class="filter-opt"><input type="radio" name="fabric" value="Silk"> <span>Silk</span></label>
+        <label class="filter-opt"><input type="radio" name="fabric" value="Wool"> <span>Wool</span></label>
+        <label class="filter-opt"><input type="radio" name="fabric" value="Polyester"> <span>Polyester</span></label>
+        <label class="filter-opt"><input type="radio" name="fabric" value="Linen"> <span>Linen</span></label>
+        <label class="filter-opt"><input type="radio" name="fabric" value="Denim"> <span>Denim</span></label>
+        <label class="filter-opt"><input type="radio" name="fabric" value="Rayon"> <span>Rayon</span></label>
+      </div>
+    </div>
+
+    <div class="filter-group">
+      <div class="filter-group-label">Size</div>
+      <div class="size-chips">
+        <div class="size-chip" data-size="" onclick="toggleSize(this,'')">All</div>
+        <div class="size-chip" data-size="XS" onclick="toggleSize(this,'XS')">XS</div>
+        <div class="size-chip" data-size="S" onclick="toggleSize(this,'S')">S</div>
+        <div class="size-chip" data-size="M" onclick="toggleSize(this,'M')">M</div>
+        <div class="size-chip" data-size="L" onclick="toggleSize(this,'L')">L</div>
+        <div class="size-chip" data-size="XL" onclick="toggleSize(this,'XL')">XL</div>
+        <div class="size-chip" data-size="XXL" onclick="toggleSize(this,'XXL')">XXL</div>
+      </div>
+    </div>
+
+    <div class="filter-group">
+      <div class="filter-group-label">Price Range (₹)</div>
+      <div class="price-inputs">
+        <input class="price-input" id="priceMin" type="number" placeholder="Min">
+        <input class="price-input" id="priceMax" type="number" placeholder="Max">
+      </div>
+    </div>
+
+    <button class="apply-btn" onclick="applyFilters()">Apply Filters</button>
+    <button class="reset-btn" onclick="resetFilters()">Clear All</button>
+  </aside>
+
+  <!-- PRODUCTS AREA -->
+  <div class="products-area">
+    <div class="products-toolbar">
+      <span class="products-toolbar-count" id="prodCount">Loading…</span>
+      <div style="display:flex;gap:1rem;align-items:center;">
+        <div class="view-toggle">
+          <button class="view-btn active" title="Grid" onclick="setView('grid',this)">⊞</button>
+          <button class="view-btn" title="List" onclick="setView('list',this)">☰</button>
+        </div>
+        <select class="sort-select" id="sortSelect" onchange="sortProducts()">
+          <option value="default">Sort: Newest</option>
+          <option value="price-asc">Price: Low → High</option>
+          <option value="price-desc">Price: High → Low</option>
+          <option value="type">Sort by Type</option>
+        </select>
+      </div>
+    </div>
+    <div class="products-grid" id="productsGrid">
+      <div class="grid-state"><div class="grid-state-icon">⏳</div><div class="grid-state-msg">Loading garments…</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- CART -->
+<div class="cart-overlay" id="cartOverlay" onclick="toggleCart()"></div>
+<div class="cart-panel" id="cartPanel">
+  <div class="cart-header"><h2>Your Cart</h2><button class="cart-close" onclick="toggleCart()">✕</button></div>
+  <div class="cart-items" id="cartItems"></div>
+  <div class="cart-footer" id="cartFooter" style="display:none;">
+    <div class="cart-total-row"><span>Total</span><span id="cartTotal">₹ 0</span></div>
+    <button class="checkout-btn" onclick="openCheckout()">Proceed to Checkout →</button>
+  </div>
+</div>
+
+<!-- CHECKOUT MODAL -->
+<div class="modal-backdrop" id="checkoutModal">
+  <div class="modal-box">
+    <div class="modal-hd"><h2>Checkout</h2><button class="cart-close" onclick="closeCheckout()">✕</button></div>
+    <div class="modal-bd" id="checkoutBody"></div>
+  </div>
+</div>
+
+<script src="https://unpkg.com/aos@2.3.4/dist/aos.js"></script>
+<script>
+AOS.init({duration:700,once:true,easing:'ease-out-cubic'});
+
+const API = 'http://localhost:3000/api';
+let allProducts = [];
+let cart = JSON.parse(localStorage.getItem('velour_cart')||'[]');
+let currentView = 'grid';
+let selectedSize = '';
+
+/* Colour-aware image lookup — key = "Type_Colour" */
+const exactImages = {
+  'Saree_Red':      'https://images.unsplash.com/photo-1610030469983-98e550d6193c?w=600&q=80',
+  'Saree_Silk':     'https://images.unsplash.com/photo-1573408301185-9519f94816f5?w=600&q=80',
+  'Shirt_Blue':     'https://images.unsplash.com/photo-1602810318383-e386cc2a3ccf?w=600&q=80',
+  'Shirt_White':    'https://images.unsplash.com/photo-1596755094514-f87e34085b2c?w=600&q=80',
+  'Shirt_Black':    'https://images.unsplash.com/photo-1618354691373-d851c5c3a990?w=600&q=80',
+  'Kurta_White':    'https://images.unsplash.com/photo-1622519407650-3df9883f76a5?w=600&q=80',
+  'Kurta_Blue':     'https://images.unsplash.com/photo-1609710228159-0fa9bd7c0827?w=600&q=80',
+  'Suit_Grey':      'https://images.unsplash.com/photo-1617127365659-c47fa864d8bc?w=600&q=80',
+  'Suit_Black':     'https://images.unsplash.com/photo-1548538557-31e93c31e0a4?w=600&q=80',
+  'Suit_Navy':      'https://images.unsplash.com/photo-1507679799987-c73779587ccf?w=600&q=80',
+  'Pant_Navy':      'https://images.unsplash.com/photo-1542272604-787c3835535d?w=600&q=80',
+  'Pant_Black':     'https://images.unsplash.com/photo-1473966968600-fa801b869a1a?w=600&q=80',
+  'Dress_Black':    'https://images.unsplash.com/photo-1515372039744-b8f02a3ae446?w=600&q=80',
+  'Dress_Red':      'https://images.unsplash.com/photo-1572804013427-4d7ca7268217?w=600&q=80',
+  'Dress_White':    'https://images.unsplash.com/photo-1585487000160-6ebcfceb0d03?w=600&q=80',
+  'Jacket_Charcoal':'https://images.unsplash.com/photo-1551028719-00167b16eac5?w=600&q=80',
+  'Jacket_Black':   'https://images.unsplash.com/photo-1544923246-77307dd654cb?w=600&q=80',
+  'Jacket_Brown':   'https://images.unsplash.com/photo-1591047139829-d91aecb6caea?w=600&q=80',
+  'Skirt_Beige':    'https://images.unsplash.com/photo-1551163943-3f7253a8b4e6?w=600&q=80',
+  'Skirt_Black':    'https://images.unsplash.com/photo-1571945153237-4929e783af4a?w=600&q=80',
+  'Skirt_White':    'https://images.unsplash.com/photo-1595777457583-95e059d581b8?w=600&q=80',
+};
+const typeDefault = {
+  Saree:'https://images.unsplash.com/photo-1610030469983-98e550d6193c?w=600&q=80',
+  Shirt:'https://images.unsplash.com/photo-1602810318383-e386cc2a3ccf?w=600&q=80',
+  Kurta:'https://images.unsplash.com/photo-1622519407650-3df9883f76a5?w=600&q=80',
+  Suit:'https://images.unsplash.com/photo-1617127365659-c47fa864d8bc?w=600&q=80',
+  Pant:'https://images.unsplash.com/photo-1542272604-787c3835535d?w=600&q=80',
+  Dress:'https://images.unsplash.com/photo-1515372039744-b8f02a3ae446?w=600&q=80',
+  Jacket:'https://images.unsplash.com/photo-1551028719-00167b16eac5?w=600&q=80',
+  Skirt:'https://images.unsplash.com/photo-1551163943-3f7253a8b4e6?w=600&q=80',
+};
+function getImg(type, colour) {
+  const key = `${type}_${colour}`;
+  if (exactImages[key]) return exactImages[key];
+  // try each word in colour (e.g. "Sky Blue" → try Blue)
+  for (const w of colour.split(' ')) {
+    const k2 = `${type}_${w}`;
+    if (exactImages[k2]) return exactImages[k2];
+  }
+  return typeDefault[type] || typeDefault.Shirt;
+}
+
+/* ── INIT ── */
+const urlParams = new URLSearchParams(location.search);
+async function init() {
+  try {
+    const res = await fetch(`${API}/clothes?status=In-Stock`);
+    allProducts = await res.json();
+    // Apply URL type filter
+    const typeParam = urlParams.get('type');
+    if (typeParam) {
+      const radio = document.querySelector(`input[name="type"][value="${typeParam}"]`);
+      if (radio) radio.checked = true;
+    }
+    applyFilters();
+  } catch {
+    renderFallback();
+  }
+  updateCartUI();
+}
+
+function renderFallback() {
+  allProducts = [
+    {cloth_id:1,type:'Saree',fabric:'Silk',colour:'Red',size:'L',price:4500,status:'In-Stock',designer_name:'Anita Dongre'},
+    {cloth_id:2,type:'Shirt',fabric:'Cotton',colour:'Sky Blue',size:'M',price:899,status:'In-Stock',designer_name:null},
+    {cloth_id:3,type:'Kurta',fabric:'Cotton',colour:'White',size:'XL',price:1200,status:'In-Stock',designer_name:'Ritu Kumar'},
+    {cloth_id:4,type:'Suit',fabric:'Wool',colour:'Grey',size:'XL',price:8500,status:'In-Stock',designer_name:'Manish Malhotra'},
+    {cloth_id:5,type:'Pant',fabric:'Denim',colour:'Navy',size:'M',price:1500,status:'In-Stock',designer_name:null},
+    {cloth_id:6,type:'Dress',fabric:'Polyester',colour:'Black',size:'S',price:2200,status:'In-Stock',designer_name:'Anita Dongre'},
+    {cloth_id:7,type:'Jacket',fabric:'Wool',colour:'Charcoal',size:'L',price:3800,status:'In-Stock',designer_name:'Manish Malhotra'},
+    {cloth_id:8,type:'Skirt',fabric:'Linen',colour:'Beige',size:'S',price:1100,status:'In-Stock',designer_name:'Ritu Kumar'},
+  ];
+  applyFilters();
+}
+
+/* ── RENDER ── */
+function renderProducts(prods) {
+  const grid = document.getElementById('productsGrid');
+  document.getElementById('prodCount').textContent = `${prods.length} item${prods.length!==1?'s':''}`;
+  if (!prods.length) {
+    grid.innerHTML = '<div class="grid-state"><div class="grid-state-icon">🔍</div><div class="grid-state-msg">No items match</div><div class="grid-state-sub">Try adjusting your filters</div></div>';
+    return;
+  }
+  grid.innerHTML = prods.map((p,i) => {
+    const img = getImg(p.type, p.colour);
+    const listClass = currentView==='list' ? ' list-card' : '';
+    return `
+    <div class="prod-card${listClass}" data-aos="fade-up" data-aos-delay="${(i%4)*60}">
+      <div class="prod-card-img" onclick="location.href='product.html?id=${p.cloth_id}'">
+        <img src="${img}" alt="${p.colour} ${p.type}" loading="lazy">
+        <span class="prod-badge ${p.status==='In-Stock'?'badge-instock':'badge-sold'}">${p.status}</span>
+        ${p.designer_name?`<span class="prod-badge badge-designer">${p.designer_name.split(' ')[0]}</span>`:''}
+        <div class="prod-card-overlay">
+          <button class="overlay-btn preview" onclick="event.stopPropagation();location.href='product.html?id=${p.cloth_id}'">👁 Preview</button>
+          ${p.status==='In-Stock'?`<button class="overlay-btn" onclick="event.stopPropagation();quickAddToCart(${p.cloth_id},'${p.type}','${p.fabric}','${p.colour}','${p.size}',${p.price},'${img}')">+ Cart</button>`:''}
+        </div>
+      </div>
+      <div class="prod-card-info">
+        <div class="prod-card-fabric">${p.fabric} · Size ${p.size}</div>
+        <div class="prod-card-name">${p.type}</div>
+        <div class="prod-card-footer">
+          <span class="prod-card-price">₹ ${Number(p.price).toLocaleString('en-IN')}</span>
+          <span class="prod-card-size">${p.size}</span>
+        </div>
+        ${p.designer_name?`<div class="prod-card-designer">By ${p.designer_name}</div>`:''}
+      </div>
+    </div>`;
+  }).join('');
+  AOS.refreshHard();
+}
+
+/* ── FILTERS ── */
+function applyFilters() {
+  const type   = document.querySelector('input[name="type"]:checked')?.value||'';
+  const fabric = document.querySelector('input[name="fabric"]:checked')?.value||'';
+  const size   = selectedSize;
+  const minP   = parseFloat(document.getElementById('priceMin').value)||0;
+  const maxP   = parseFloat(document.getElementById('priceMax').value)||Infinity;
+  let f = allProducts;
+  if (type)   f = f.filter(p=>p.type===type);
+  if (fabric) f = f.filter(p=>p.fabric===fabric);
+  if (size)   f = f.filter(p=>p.size===size);
+  if (minP)   f = f.filter(p=>p.price>=minP);
+  if (maxP<Infinity) f = f.filter(p=>p.price<=maxP);
+  renderProducts(f);
+}
+
+function resetFilters() {
+  document.querySelectorAll('input[name="type"],input[name="fabric"]').forEach(r=>r.value===''&&(r.checked=true));
+  document.querySelectorAll('input[type="radio"]').forEach(r=>{ if(r.value==='') r.checked=true; });
+  document.querySelectorAll('.size-chip').forEach(c=>{ c.classList.toggle('selected',c.dataset.size===''); });
+  selectedSize = '';
+  document.getElementById('priceMin').value='';
+  document.getElementById('priceMax').value='';
+  renderProducts(allProducts);
+}
+
+function toggleSize(el, size) {
+  selectedSize = size;
+  document.querySelectorAll('.size-chip').forEach(c=>c.classList.toggle('selected',c.dataset.size===size));
+}
+
+function sortProducts() {
+  const val = document.getElementById('sortSelect').value;
+  const prods = [...allProducts];
+  if (val==='price-asc')  prods.sort((a,b)=>a.price-b.price);
+  if (val==='price-desc') prods.sort((a,b)=>b.price-a.price);
+  if (val==='type')       prods.sort((a,b)=>a.type.localeCompare(b.type));
+  renderProducts(prods);
+}
+
+function setView(v, btn) {
+  currentView = v;
+  document.querySelectorAll('.view-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  const grid = document.getElementById('productsGrid');
+  grid.classList.toggle('list-view', v==='list');
+  applyFilters();
+}
+
+/* ── CART ── */
+/* Quick-add from catalog card (always qty 1, opens cart) */
+function quickAddToCart(id,type,fabric,colour,size,price,img) {
+  const existing = cart.find(i=>i.cloth_id===id);
+  if (existing) {
+    existing.quantity = Math.min(10,(existing.quantity||1)+1);
+  } else {
+    cart.push({cloth_id:id,type,fabric,colour,size,price,img,quantity:1});
+  }
+  saveCart(); updateCartUI(); renderCart(); toggleCart();
+}
+
+/* Keep old name as alias for any remaining references */
+function addToCart(id,type,fabric,colour,size,price,img){ quickAddToCart(id,type,fabric,colour,size,price,img); }
+
+function changeQty(id, delta) {
+  const item = cart.find(i=>i.cloth_id===id);
+  if (!item) return;
+  const newQty = (item.quantity||1) + delta;
+  if (newQty < 1) { removeFromCart(id); return; }
+  item.quantity = Math.min(10, newQty);
+  saveCart(); updateCartUI(); renderCart();
+}
+
+function removeFromCart(id) {
+  cart = cart.filter(i=>i.cloth_id!==id);
+  saveCart(); updateCartUI(); renderCart();
+}
+
+function saveCart() { localStorage.setItem('velour_cart',JSON.stringify(cart)); }
+
+function updateCartUI() {
+  const n = cart.reduce((s,i)=>s+(i.quantity||1),0);
+  document.getElementById('cartCount').textContent = n;
+}
+
+function renderCart() {
+  const el = document.getElementById('cartItems');
+  const footer = document.getElementById('cartFooter');
+  if (!cart.length) {
+    el.innerHTML='<div class="cart-empty"><div class="cart-empty-icon">🛍</div><p>Your cart is empty</p><p style="font-size:.8rem;margin-top:.5rem;">Add some garments to get started.</p></div>';
+    footer.style.display='none'; return;
+  }
+  el.innerHTML = cart.map(item=>{
+    const itemImg = item.img || getImg(item.type, item.colour);
+    const qty = item.quantity||1;
+    const lineTotal = (Number(item.price)*qty).toLocaleString('en-IN');
+    return `
+    <div class="cart-item">
+      <img class="cart-item-img" src="${itemImg}" alt="${item.type}">
+      <div class="cart-item-info">
+        <div class="cart-item-name">${item.type}</div>
+        <div class="cart-item-detail">${item.fabric} · Size ${item.size}</div>
+        <div class="cart-item-price">₹ ${lineTotal} ${qty>1?`<span style="font-size:.72rem;color:var(--muted);">(${qty}×₹${Number(item.price).toLocaleString('en-IN')})</span>`:''}</div>
+        <div style="display:flex;align-items:center;gap:.5rem;margin-top:.5rem;">
+          <button onclick="changeQty(${item.cloth_id},-1)" style="width:26px;height:26px;border:1px solid rgba(201,169,110,.3);background:none;cursor:pointer;font-size:1rem;display:flex;align-items:center;justify-content:center;transition:background .2s;" onmouseover="this.style.background='rgba(201,169,110,.12)'" onmouseout="this.style.background='none'">−</button>
+          <span style="font-size:.88rem;font-weight:500;min-width:1.2rem;text-align:center;">${qty}</span>
+          <button onclick="changeQty(${item.cloth_id},1)" style="width:26px;height:26px;border:1px solid rgba(201,169,110,.3);background:none;cursor:pointer;font-size:1rem;display:flex;align-items:center;justify-content:center;transition:background .2s;" onmouseover="this.style.background='rgba(201,169,110,.12)'" onmouseout="this.style.background='none'">+</button>
+          <button class="cart-item-remove" onclick="removeFromCart(${item.cloth_id})" style="margin-left:.3rem;">× Remove</button>
+        </div>
+      </div>
+    </div>`; }).join('');
+  const total = cart.reduce((s,i)=>s+Number(i.price)*(i.quantity||1),0);
+  document.getElementById('cartTotal').textContent = '₹ '+total.toLocaleString('en-IN');
+  footer.style.display='block';
+}
+
+function toggleCart() {
+  document.getElementById('cartPanel').classList.toggle('open');
+  document.getElementById('cartOverlay').classList.toggle('open');
+  renderCart();
+}
+
+/* ── CHECKOUT ── */
+function openCheckout() {
+  if (!cart.length) return;
+  toggleCart();
+  const total = cart.reduce((s,i)=>s+Number(i.price)*(i.quantity||1),0);
+  document.getElementById('checkoutBody').innerHTML = `
+    <div class="order-summary-box">
+      <div class="order-summary-title">Order Summary</div>
+      ${cart.map(i=>{
+        const qty=i.quantity||1;
+        const line=Number(i.price)*qty;
+        return `<div class="order-row">
+          <span>${i.type} (${i.size})${qty>1?` ×${qty}`:''}</span>
+          <span>₹${line.toLocaleString('en-IN')}</span>
+        </div>`;
+      }).join('')}
+      <div class="order-total-row"><span>Total</span><span>₹${total.toLocaleString('en-IN')}</span></div>
+    </div>
+    <label class="modal-label">Full Name</label>
+    <input class="modal-input" id="oName" placeholder="Enter your full name">
+    <label class="modal-label">Contact Number</label>
+    <input class="modal-input" id="oContact" placeholder="10-digit mobile number">
+    <label class="modal-label">Delivery Address</label>
+    <input class="modal-input" id="oAddress" placeholder="Full delivery address">
+    <div class="modal-note">💳 This is a <strong>demo transaction</strong> for the DBMS project — no real payment is processed.</div>
+    <button class="place-order-btn" onclick="placeOrder()">✓ Confirm Order</button>
+    <div class="order-msg" id="orderMsg"></div>`;
+  document.getElementById('checkoutModal').classList.add('open');
+}
+
+function closeCheckout() { document.getElementById('checkoutModal').classList.remove('open'); }
+
+async function placeOrder() {
+  const name=document.getElementById('oName').value.trim();
+  const contact=document.getElementById('oContact').value.trim();
+  const address=document.getElementById('oAddress').value.trim();
+  const msg=document.getElementById('orderMsg');
+  if (!name||!contact||!address){ msg.textContent='Please fill all fields.'; msg.style.color='var(--rust)'; return; }
+  msg.textContent='Processing…'; msg.style.color='var(--muted)';
+  try {
+    const res=await fetch(`${API}/orders`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({customer_name:name,customer_address:address,customer_contact:contact,items:cart.map(i=>({cloth_id:i.cloth_id,quantity:i.quantity||1}))})});
+    const data=await res.json();
+    if (!res.ok) throw new Error(data.error);
+    cart=[]; saveCart(); updateCartUI();
+    document.getElementById('checkoutBody').innerHTML=`
+      <div class="success-wrap">
+        <div class="success-icon">✅</div>
+        <div class="success-title">Order Confirmed!</div>
+        <div class="success-msg">Thank you, <strong>${name}</strong>!<br>Your order has been recorded in our system.<br><br>Order ID${data.orderIds?.length>1?'s':''}: <strong>#${data.orderIds?.join(', #')}</strong></div>
+        <button class="success-cta" onclick="closeCheckout();location.reload()">Continue Shopping</button>
+      </div>`;
+  } catch(e) {
+    msg.textContent='✗ '+(e.message||'Could not place order. Is backend running?');
+    msg.style.color='var(--rust)';
+  }
+}
+
+/* ── URL param filter ── */
+const urlType = urlParams.get('type');
+if (urlType) {
+  document.addEventListener('DOMContentLoaded', () => {
+    const r = document.querySelector(`input[name="type"][value="${urlType}"]`);
+    if (r) r.checked = true;
+  });
+}
+
+init();
+</script>
+</body>
+</html>
