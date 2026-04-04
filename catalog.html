@@ -605,7 +605,7 @@ async function placeOrder() {
   if (!name||!contact||!address){ msg.textContent='Please fill all fields.'; msg.style.color='var(--rust)'; return; }
   msg.textContent='Processing…'; msg.style.color='var(--muted)';
   try {
-    const res=await fetch(`${API}/orders`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({customer_name:name,customer_address:address,customer_contact:contact,items:cart.map(i=>({cloth_id:i.cloth_id,quantity:i.quantity||1}))})});
+    const res=await fetch("api/order.js",{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({customer_name:name,customer_address:address,customer_contact:contact,items:cart.map(i=>({cloth_id:i.cloth_id,quantity:i.quantity||1}))})});
     const data=await res.json();
     if (!res.ok) throw new Error(data.error);
     cart=[]; saveCart(); updateCartUI();
