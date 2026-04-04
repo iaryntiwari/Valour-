@@ -370,7 +370,7 @@ function switchTab(tab, el) {
 // ── Dashboard ─────────────────────────────────────────────
 async function loadDashboard() {
   try {
-    const d = await fetch(`${API}/admin/dashboard`).then(r=>r.json());
+    const d = await fetch("api/get-admin-dashbaord").then(r=>r.json());
     document.getElementById('s-stock').textContent   = d.total_stock;
     document.getElementById('s-sold').textContent    = d.total_sold;
     document.getElementById('s-revenue').textContent = '₹'+Number(d.total_revenue).toLocaleString('en-IN');
@@ -409,21 +409,25 @@ async function loadDashboard() {
 
 // ── Inventory ─────────────────────────────────────────────
 async function loadClothes() {
-  const [clothRes, dRes, bRes] = await Promise.all([
-    fetch(`${API}/clothes?status=`).then(r=>r.json()).catch(()=>[]),
-    fetch(`${API}/designers`).then(r=>r.json()).catch(()=>[]),
-    fetch(`${API}/branches`).then(r=>r.json()).catch(()=>[]),
-  ]);
-  clothData = clothRes; designers = dRes; branches = bRes;
+  try {
+    const [clothRes, dRes, bRes] = await Promise.all([
+      fetch("api/clothes").then(r=>r.json()),
+      fetch("api/designers").then(r=>r.json()),
+      fetch("api/branches").then(r=>r.json()),
+    ]);
+    clothData = clothRes; designers = dRes; branches = bRes;
 
-  // Populate modal selects
-  document.getElementById('cDesigner').innerHTML =
-    '<option value="">— None —</option>' +
-    designers.map(d=>`<option value="${d.designer_id}">${d.name}</option>`).join('');
-  document.getElementById('cBranch').innerHTML =
-    branches.map(b=>`<option value="${b.branch_id}">${b.branch_name}</option>`).join('');
+    // Populate modal selects
+    document.getElementById('cDesigner').innerHTML =
+      '<option value="">— None —</option>' +
+      designers.map(d=>`<option value="${d.designer_id}">${d.name}</option>`).join('');
+    document.getElementById('cBranch').innerHTML =
+      branches.map(b=>`<option value="${b.branch_id}">${b.branch_name}</option>`).join('');
 
-  renderClothTable(clothData);
+    renderClothTable(clothData);
+  } catch (e) {
+    console.error('Error loading clothes:', e);
+  }
 }
 
 function renderClothTable(data) {
@@ -515,21 +519,25 @@ async function deleteCloth(id) {
 
 // ── Complaints ────────────────────────────────────────────
 async function loadComplaints() {
-  const data = await fetch(`${API}/complaints`).then(r=>r.json()).catch(()=>[]);
-  const statusClass = {Open:'badge-open','In-Progress':'badge-progress',Resolved:'badge-resolved'};
-  document.querySelector('#compTable tbody').innerHTML = data.length
-    ? data.map(c=>`
-        <tr>
-          <td>#${c.complaint_id}</td>
-          <td>${c.customer_name}</td>
-          <td style="font-size:.75rem">${c.contact_no}</td>
-          <td style="max-width:200px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;" title="${c.description}">${c.description}</td>
-          <td style="font-size:.75rem;color:var(--muted)">${new Date(c.complaint_date).toLocaleDateString('en-IN')}</td>
-          <td><span class="badge ${statusClass[c.status]||''}">${c.status}</span></td>
-          <td style="max-width:180px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:var(--muted);font-size:.78rem" title="${c.solution||''}">${c.solution||'—'}</td>
-          <td><button class="action-btn" onclick='openResolve(${c.complaint_id},"${c.description.replace(/"/g,"'")}","${c.solution||''}","${c.status}")'>Resolve</button></td>
-        </tr>`).join('')
-    : '<tr><td colspan="8" style="text-align:center;color:var(--muted);padding:2rem;">No complaints</td></tr>';
+  try {
+    const data = await fetch("api/complaints.js").then(r=>r.json());
+    const statusClass = {Open:'badge-open','In-Progress':'badge-progress',Resolved:'badge-resolved'};
+    document.querySelector('#compTable tbody').innerHTML = data.length
+      ? data.map(c=>`
+          <tr>
+            <td>#${c.complaint_id}</td>
+            <td>${c.customer_name}</td>
+            <td style="font-size:.75rem">${c.contact_no}</td>
+            <td style="max-width:200px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;" title="${c.description}">${c.description}</td>
+            <td style="font-size:.75rem;color:var(--muted)">${new Date(c.complaint_date).toLocaleDateString('en-IN')}</td>
+            <td><span class="badge ${statusClass[c.status]||''}">${c.status}</span></td>
+            <td style="max-width:180px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:var(--muted);font-size:.78rem" title="${c.solution||''}">${c.solution||'—'}</td>
+            <td><button class="action-btn" onclick='openResolve(${c.complaint_id},"${c.description.replace(/"/g,"'")}","${c.solution||''}","${c.status}")'>Resolve</button></td>
+          </tr>`).join('')
+      : '<tr><td colspan="8" style="text-align:center;color:var(--muted);padding:2rem;">No complaints</td></tr>';
+  } catch (e) {
+    console.error('Error loading complaints:', e);
+  }
 }
 
 function openResolve(id, desc, solution, status) {
@@ -559,25 +567,32 @@ async function saveResolution() {
 
 // ── Employees ─────────────────────────────────────────────
 async function loadEmployees() {
-  const data = await fetch(`${API}/employees`).then(r=>r.json()).catch(()=>[]);
-  document.querySelector('#empTable tbody').innerHTML = data.length
-    ? data.map(e=>`
-        <tr>
-          <td>#${e.emp_id}</td>
-          <td>${e.name}</td>
-          <td>${e.designation}</td>
-          <td style="font-size:.78rem;color:var(--muted)">${e.branch_name}</td>
-          <td style="font-size:.78rem">${e.contact_no}</td>
-          <td>₹${Number(e.salary).toLocaleString('en-IN')}</td>
-        </tr>`).join('')
-    : '<tr><td colspan="6" style="text-align:center;color:var(--muted);padding:2rem;">No employees</td></tr>';
+  try {
+    const res = await fetch("api/get-employees.js");
+    const data = await res.json();
+    document.querySelector('#empTable tbody').innerHTML = data.length
+      ? data.map(e=>`
+          <tr>
+            <td>#${e.emp_id}</td>
+            <td>${e.name}</td>
+            <td>${e.designation}</td>
+            <td style="font-size:.78rem;color:var(--muted)">${e.branch_name}</td>
+            <td style="font-size:.78rem">${e.contact_no}</td>
+            <td>₹${Number(e.salary).toLocaleString('en-IN')}</td>
+          </tr>`).join('')
+      : '<tr><td colspan="6" style="text-align:center;color:var(--muted);padding:2rem;">No employees</td></tr>';
+  } catch (e) {
+    document.querySelector('#empTable tbody').innerHTML = '<tr><td colspan="6" style="text-align:center;color:var(--muted);padding:2rem;">No employees</td></tr>';
+  }
 }
 
 // ── Orders ────────────────────────────────────────────────
 async function loadOrders() {
-  console.log("call")
-  const data = await fetch("api/get-order.js").then(r=>r.json()).catch(()=>[]);
-  document.querySelector('#ordTable tbody').innerHTML = data.length
+
+  try {
+    const res = await fetch("api/get-order.js");
+    const data = await res.json();
+      document.querySelector('#ordTable tbody').innerHTML = data.length
     ? data.map(o=>`
         <tr>
           <td>#${o.order_id}</td>
@@ -589,11 +604,14 @@ async function loadOrders() {
           <td style="font-size:.75rem;color:var(--muted)">${new Date(o.order_date).toLocaleDateString('en-IN')}</td>
         </tr>`).join('')
     : '<tr><td colspan="7" style="text-align:center;color:var(--muted);padding:2rem;">No orders yet</td></tr>';
+  } catch (e) {
+    console.error("Error fetching orders:", e);
+  }
 }
 
 // Init
-// loadDashboard();
-loadOrders();
+loadDashboard();
+
 
 // Logout
 function logout() {
