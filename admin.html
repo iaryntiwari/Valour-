@@ -575,7 +575,8 @@ async function loadEmployees() {
 
 // ── Orders ────────────────────────────────────────────────
 async function loadOrders() {
-  const data = await fetch(`${API}/orders`).then(r=>r.json()).catch(()=>[]);
+  console.log("call")
+  const data = await fetch("api/get-order.js").then(r=>r.json()).catch(()=>[]);
   document.querySelector('#ordTable tbody').innerHTML = data.length
     ? data.map(o=>`
         <tr>
@@ -591,7 +592,8 @@ async function loadOrders() {
 }
 
 // Init
-loadDashboard();
+// loadDashboard();
+loadOrders();
 
 // Logout
 function logout() {

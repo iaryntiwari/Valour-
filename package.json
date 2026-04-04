@@ -1,0 +1,25 @@
+{
+  "name": "valour",
+  "version": "1.0.0",
+  "description": "Garment Store Server",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/kishan-electrodev/Valour.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "module",
+  "bugs": {
+    "url": "https://github.com/kishan-electrodev/Valour/issues"
+  },
+  "homepage": "https://github.com/kishan-electrodev/Valour#readme",
+  "dependencies": {
+    "dotenv": "^17.4.0",
+    "pg": "^8.20.0"
+  }
+}
